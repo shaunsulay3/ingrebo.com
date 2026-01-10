@@ -1,0 +1,88 @@
+@import "tailwindcss";
+/* index.css - default standardized base styles */
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Base html/body styles */
+html {
+    font-size: 16px; /* Default root font size */
+}
+
+body {
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+        Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    line-height: 1.5;
+    color: #111;
+    background-color: #fff;
+}
+
+/* Headings keep hierarchy */
+h1 {
+    font-size: 2.25rem; /* ~36px */
+    font-weight: 700;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.875rem; /* ~30px */
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    font-size: 1.5rem; /* ~24px */
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+h4 {
+    font-size: 1.25rem; /* ~20px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
+
+h5 {
+    font-size: 1.125rem; /* ~18px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
+
+h6 {
+    font-size: 1rem; /* ~16px */
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
+
+/* Paragraphs */
+p {
+    margin-bottom: 1em;
+}
+
+/* Lists */
+ul,
+ol {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+/* Links */
+a {
+    color: inherit; /* inherit parent text color */
+    text-decoration: none; /* remove underline */
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* Media elements */
+img,
+video {
+    max-width: 100%;
+    display: block;
+}
