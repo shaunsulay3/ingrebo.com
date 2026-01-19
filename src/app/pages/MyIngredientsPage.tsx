@@ -93,14 +93,18 @@ export default function MyIngredientsPage() {
             }
         }
     };
+    if (isFetching) {
+        return <div>Loading...</div>;
+    }
+    if (!data) {
+        return <ErrorPage />;
+    }
     return (
         <div className="w-full">
             <div className="h-10"></div>
             <div className="ml-15 mr-15">
                 <UserIngredientInputArea />
             </div>
-            {isFetching && <div className="ml-15">Loading...</div>}
-            {!data && <ErrorPage />}
             {categories.length > 0 && (
                 <div className="mx-15 mt-10 grid grid-cols-2 gap-5">
                     {categories.map((category, categoryIndex) => {
