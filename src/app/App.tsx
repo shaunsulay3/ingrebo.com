@@ -6,10 +6,10 @@ import CreateRecipePage from "./pages/CreateRecipePage";
 import LoginPage from "./pages/LoginPage";
 import { UserRecipesPage } from "./pages/UserRecipesPage";
 import MyIngredientsPage from "./pages/MyIngredientsPage";
-import SignUpPage from "./pages/SignUpPage";
 import SearchPage from "./pages/SearchPage";
 import SavePage from "./pages/SavedPage";
 import ExplorePage from "./pages/ExplorePage";
+import WelcomePage from "./pages/WelcomePage";
 
 function App() {
     return (
@@ -24,7 +24,7 @@ function App() {
                 <Route path="/my-ingredients" element={<MyIngredientsPage />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
         </Routes>
     );
 }

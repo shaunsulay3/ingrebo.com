@@ -134,9 +134,9 @@ function RecipePage() {
         }
     };
     return (
-        <div className="px-16 py-5">
-            <div className="flex items-stretch border-2 border-gray-100 rounded-2xl">
-                <div className="rounded-2xl flex-1 flex flex-col justify-center m-8">
+        <div className="">
+            <div className="flex flex-wrap-reverse gap-y-4 gap-x-8 justify-center border-2 border-gray-100 rounded-2xl px-8 py-8">
+                <div className="rounded-2xl flex-1 flex flex-col justify-center min-w-[280px] max-w-[600px]">
                     <h1 className="!m-0">{data.name}</h1>
                     <div className="mb-6">{data.description}</div>
                     <div className="!m-0">
@@ -165,7 +165,7 @@ function RecipePage() {
                     </div>
                 </div>
                 {data.imageUrl && (
-                    <div className="w-[38vw] flex items-center my-8 mr-8">
+                    <div className="flex min-w-[250px] max-w-[450px] items-center">
                         <div className="aspect-[4/3]">
                             <img
                                 src={data.imageUrl}

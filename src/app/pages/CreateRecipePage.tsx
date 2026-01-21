@@ -39,7 +39,6 @@ function CreateRecipePage() {
     });
 
     useEffect(() => {
-        console.log(request, imageFile);
         if (createButtonClickable) {
             return;
         }
@@ -103,7 +102,7 @@ function CreateRecipePage() {
         ? "border-green-800 hover:bg-green-200 text-green-800 transition-colors duration-200 cursor-pointer"
         : "border-gray-400 text-gray-400 cursor-not-allowed";
     return (
-        <div className="px-20 pt-5">
+        <div>
             <h1>Create a Recipe</h1>
             <div className="flex w-full flex-wrap mb-4">
                 <div className="min-w-[60%] mr-2">

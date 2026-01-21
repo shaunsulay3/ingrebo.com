@@ -37,7 +37,10 @@ function RecipeIngredientLineInputArea({
     const lastParentUpdate = useRef<RecipeIngredientLineRequestDTO[]>([]);
     const timersRef = useRef<number[]>([]);
     const prevIngredientIndices = useRef<IngredientIndex[]>([]);
-
+    useEffect(() => {
+        // console.log("recipe ingredient lines:", recipeIngredientLines);
+        // console.log("recipe ingredient line query status", recipeIngredientLineQueryStatus);
+    }, [recipeIngredientLines, recipeIngredientLineQueryStatus]);
     useEffect(() => {
         const handleClickAnywhere = () => {
             if (ingredientIndices.some((ingIdx) => ingIdx.clickedWord !== null)) {
@@ -312,16 +315,16 @@ function RecipeIngredientLineInputArea({
             }
             if (foundChangeEndIndex) break;
         }
-        // console.log("=============================");
-        // console.log("Old lines:", oldLines);
-        // console.log("New lines:", lines);
-        // console.log("=============================");
-        // console.log("Change start:", changeStartIndex);
-        // console.log("Change start line:", changeStartLineIndex);
-        // console.log("Change end:", changeEndIndex);
-        // console.log("Change end line:", changeEndLineIndex);
-        // console.log("Change end new:", changeEndNewIndex);
-        // console.log("Change end line:", changeEndNewLineIndex);
+        console.log("=============================");
+        console.log("Old lines:", oldLines);
+        console.log("New lines:", lines);
+        console.log("=============================");
+        console.log("Change start:", changeStartIndex);
+        console.log("Change start line:", changeStartLineIndex);
+        console.log("Change end:", changeEndIndex);
+        console.log("Change end line:", changeEndLineIndex);
+        console.log("Change end new:", changeEndNewIndex);
+        console.log("Change end line:", changeEndNewLineIndex);
 
         let newIngredientIndices: IngredientIndex[] = [];
         setRecipeIngredientLines(lines);
@@ -371,6 +374,7 @@ function RecipeIngredientLineInputArea({
             if (index < changeStartLineIndex) {
                 newTimersRef.push(timersRef.current[index]);
                 newQueryStatuses.push(recipeIngredientLineQueryStatus[index]);
+                console.log(line, "1");
                 return;
             }
             const inlineIngredientIndices = newIngredientIndices.filter(
@@ -381,19 +385,23 @@ function RecipeIngredientLineInputArea({
                 if (lines[index] === oldLines[priorIndex]) {
                     newTimersRef.push(timersRef.current[priorIndex]);
                     newQueryStatuses.push(recipeIngredientLineQueryStatus[priorIndex]);
+                    console.log(line, "2");
                     return;
                 }
                 newTimersRef.push(fetchSearchRecipeIngredientLine(line, inlineIngredientIndices));
                 newQueryStatuses.push("loading");
+                console.log(line, "3");
                 return;
             }
             if (index <= changeEndLineIndex && lines[index] !== oldLines[index]) {
                 newTimersRef.push(fetchSearchRecipeIngredientLine(line, inlineIngredientIndices));
                 newQueryStatuses.push("loading");
+                console.log(line, "4");
                 return;
             }
             newTimersRef.push(timersRef.current[priorIndex]);
             newQueryStatuses.push(recipeIngredientLineQueryStatus[priorIndex]);
+            console.log(line, "5");
             return;
         });
         const newTimersRefSet = new Set(newTimersRef);

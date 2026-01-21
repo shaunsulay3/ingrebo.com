@@ -21,7 +21,7 @@ function ExplorePage() {
         return <div>No data</div>;
     }
     return (
-        <div className="px-10">
+        <div>
             {byMatch ? (
                 <div>
                     <div className="text-green-800 mb-4 border-b-2 border-gray-200 text-3xl bold p-4">

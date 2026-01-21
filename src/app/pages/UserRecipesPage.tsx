@@ -4,6 +4,7 @@ import RecipeThumbnail from "../../features/recipes/components/RecipeThumbnail";
 import { useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import ErrorPage from "./ErrorPage";
+import SoEmpty from "../../components/SoEmpty";
 
 export function UserRecipesPage() {
     const { slug } = useParams();
@@ -23,8 +24,9 @@ export function UserRecipesPage() {
         return <ErrorPage />;
     }
     return (
-        <div className="px-10 py-8">
+        <div>
             <h1>{data.username}'s Recipes</h1>
+            {data.recipeThumbnails.length === 0 && <SoEmpty className="my-40" />}
             <div className="columns-[300px]">
                 {data.recipeThumbnails.map((r) => (
                     <div className="w-full break-inside-avoid mb-4">

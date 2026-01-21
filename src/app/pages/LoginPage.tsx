@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { login as loginApi } from "../../api/auth-api";
 import { useAuth } from "../../contexts/AuthContext";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import ContinueWithGoogle from "../../components/ContinueWithGoogle";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -11,99 +11,27 @@ function LoginPage() {
     if (isAuthenticated) {
         navigate("/");
     }
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
-        try {
-            // use react query instead
-            if (errorMessage) {
-                setErrorMessage(null);
-            }
-            await loginApi(username, password);
-            await login();
-            navigate("/");
-        } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.status === 401) {
-                setErrorMessage(error.response.data.message);
-                return;
-            }
-            throw error;
-        }
-    };
 
     return (
-        <div className="relative">
-            <div className="absolute top-0 left-0 z-20 h-50 w-full p-6 bg-gradient-to-b from-white/100 to-transparent">
-                <a href="/" className="items-center">
-                    <img src="/logo.svg" alt="Logo" className="w-50" />
-                </a>
-            </div>
-            <div className="absolute inset-0 bg-[url('/wallpaper.png')] bg-[length:200%] bg-center w-full"></div>
-            <div className="absolute inset-0 bg-white/70"></div>
-            <div className="relative z-10 border-red-500 flex items-center justify-center min-h-screen">
-                <form
-                    onSubmit={handleSubmit}
-                    className="bg-white p-8 rounded-lg shadow-md w-120 max-w-sm border-gray-100 border-2"
+        <div className="relative h-screen overflow-hidden">
+            <div
+                className="absolute inset-0 bg-[url('/wallpaper.png')] bg-[length:200%] bg-center w-full"
+                style={{ backgroundAttachment: "fixed" }}
+            ></div>
+            <div className="absolute inset-0 bg-green-100/70"></div>
+            <div className="relative z-10 w-1/3 min-w-80 h-full px-[5%] bg-white text-green-800 overflow-y-auto max-h-screen flex flex-col justify-center">
+                <img src="/logo.svg" alt="Logo" className="w-50" />
+
+                <div className="text-2xl mb-5">
+                    Create an account or log into an existing one with Google.
+                </div>
+                <ContinueWithGoogle className="h-20 w-[70%] text-4xl mb-4" />
+                <a
+                    className="h-15 border rounded-md border-gray-300 flex items-center justify-center text-sm"
+                    href="/"
                 >
-                    <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-
-                    <div className="mb-4">
-                        <label htmlFor="username" className="block mb-1 font-medium">
-                            Username
-                        </label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setUsername(e.target.value)
-                            }
-                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your username"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label htmlFor="password" className="block mb-1 font-medium">
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setPassword(e.target.value)
-                            }
-                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter your password"
-                            required
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
-                    >
-                        Login
-                    </button>
-                    <div className="text-center mt-3 text-sm">
-                        <span>Don't have an account? </span>
-                        <Link to={"/signup"}>
-                            {" "}
-                            <span className="text-blue-500">Sign Up</span>
-                        </Link>
-                    </div>
-                    {errorMessage && (
-                        <p className="text-red-400">
-                            <i>{errorMessage}</i>
-                        </p>
-                    )}
-                </form>
+                    <div className="text-center">Continue without an account</div>
+                </a>
             </div>
         </div>
     );

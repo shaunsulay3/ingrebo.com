@@ -101,12 +101,11 @@ export default function MyIngredientsPage() {
     }
     return (
         <div className="w-full">
-            <div className="h-10"></div>
-            <div className="ml-15 mr-15">
+            <div className="">
                 <UserIngredientInputArea />
             </div>
             {categories.length > 0 && (
-                <div className="mx-15 mt-10 grid grid-cols-2 gap-5">
+                <div className="mt-3 grid grid-cols-2 gap-5">
                     {categories.map((category, categoryIndex) => {
                         if (
                             !userIngredientObjects.some((ui) => ui.categoryIndex === categoryIndex)

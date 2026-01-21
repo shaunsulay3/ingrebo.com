@@ -56,7 +56,12 @@ export default function UserIngredientInputArea() {
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Enter" && input.trim() !== "") {
+        if (e.key === "Enter") {
+            handleAddIngredient();
+        }
+    };
+    const handleAddIngredient = (): void => {
+        if (input.trim() !== "") {
             setIngredients([
                 ...ingredients,
                 { name: input.trim(), variety: null, isOpen: false, id: uuid() },
@@ -105,56 +110,61 @@ export default function UserIngredientInputArea() {
 
     return (
         <div>
-            <div className={`flex justify-between items-center px-5 bg-gray-100 rounded-2xl`}>
-                <h1 className="mt-3 text-green-950">
-                    {user ? user.username + "'s Ingredients" : "My Ingredients"}
-                </h1>
-                <div className="flex items-center">
-                    <InputBox
-                        className={"my-3 w-150 bg-white rounded-2xl h-10 border-0"}
-                        maxChars={40}
-                        placeholder="Type an ingredient to add and press enter.."
-                        onKeyDown={handleKeyDown}
-                        onChange={(value) => setInput(value)}
-                        value={input}
-                    />
-                    <button className="ml-3  px-3 py-2 bg-white rounded-2xl text-green-900">
-                        Add
-                    </button>
-                </div>
-            </div>
-            {ingredients.length > 0 && (
-                <div className="mt-4 rounded-2xl border-gray-100 border-4 flex flex-wrap px-5 gap-y-3 gap-x-5 py-3">
-                    {ingredients.map((ingredient) => (
-                        <UserIngredient
-                            key={ingredient.name}
-                            id={ingredient.id}
-                            onDelete={handleDelete}
-                            onUpdateVariety={handleUpdateVariety}
-                            name={ingredient.name}
-                            isOpen={ingredient.isOpen}
-                            onToggleOpen={handleToggleOpen}
-                            search={true}
+            <div className="px-8 py-2 border-green-800 border-b-2">
+                <div className={`flex flex-wrap items-center gap-x-4`}>
+                    <div className=" text-green-800 text-3xl font-semibold">
+                        {user ? user.username + "'s Ingredients" : "My Ingredients"}
+                    </div>
+                    <div className="flex items-center flex-1 gap-x-2">
+                        <InputBox
+                            className={
+                                "my-3 min-w-50 w-full border-0 border-b-1 h-10 border-green-800 text-green-800"
+                            }
+                            focus={false}
+                            maxChars={40}
+                            placeholder="Type an ingredient to add and press enter.."
+                            onKeyDown={handleKeyDown}
+                            onChange={(value) => setInput(value)}
+                            value={input}
                         />
-                    ))}
+                        <button
+                            className={`${
+                                saving || ingredients.length === 0
+                                    ? "bg-gray-400 text-white"
+                                    : "border-2 border-green-800 text-green-800 hover:bg-green-800 hover:text-white cursor-pointer"
+                            }  rounded-xl px-3 py-1 duration-200`}
+                            onClick={() => {
+                                if (ingredients.length > 0) {
+                                    handleSave();
+                                }
+                            }}
+                        >
+                            {saving ? "Saving..." : "Save"}
+                        </button>
+                    </div>
                 </div>
-            )}
-            {ingredients.length > 0 && (
-                <div className="flex items-center mt-4">
-                    <button
-                        className="border-2 border-green-700 rounded-2xl px-3 py-1 text-green-700 cursor-pointer hover:bg-green-700 hover:text-white duration-200"
-                        onClick={() => handleSave()}
-                    >
-                        Save
-                    </button>
-                    {saving && <div className="ml-3 text-green-700">Saving...</div>}
-                    {!saving && ingredientError && (
-                        <div className="text-red-600 ml-3">
-                            <i>{`${ingredientError.name} could not be found`}</i>
-                        </div>
-                    )}
-                </div>
-            )}
+                {ingredients.length > 0 && (
+                    <div className="flex flex-wrap gap-y-3 gap-x-5 mb-3">
+                        {ingredients.map((ingredient) => (
+                            <UserIngredient
+                                key={ingredient.name}
+                                id={ingredient.id}
+                                onDelete={handleDelete}
+                                onUpdateVariety={handleUpdateVariety}
+                                name={ingredient.name}
+                                isOpen={ingredient.isOpen}
+                                onToggleOpen={handleToggleOpen}
+                                search={true}
+                            />
+                        ))}
+                    </div>
+                )}
+                {!saving && ingredientError && (
+                    <div className="text-red-600 ml-3">
+                        <i>{`${ingredientError.name} could not be found`}</i>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
