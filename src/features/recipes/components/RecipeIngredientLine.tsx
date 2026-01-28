@@ -34,7 +34,7 @@ export default function RecipeIngredientLine({
         lastIndex = endIndex;
     }
     return (
-        <li className="mb-1">
+        <div className="mb-1">
             {sentenceParts.map((sentencePart, index) => {
                 return (
                     <span>
@@ -50,6 +50,6 @@ export default function RecipeIngredientLine({
                     </span>
                 );
             })}
-        </li>
+        </div>
     );
 }

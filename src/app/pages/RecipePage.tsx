@@ -134,7 +134,7 @@ function RecipePage() {
         }
     };
     return (
-        <div className="">
+        <div className="px-4">
             <div className="flex flex-wrap-reverse gap-y-4 gap-x-8 justify-center border-2 border-gray-100 rounded-2xl px-8 py-8">
                 <div className="rounded-2xl flex-1 flex flex-col justify-center min-w-[280px] max-w-[600px]">
                     <h1 className="!m-0">{data.name}</h1>
@@ -196,7 +196,7 @@ function RecipePage() {
             <div className="flex flex-wrap mt-4 gap-5">
                 <div className="px-8 py-4 rounded-2xl border-gray-100 border-2 w-fit">
                     <h2 className="!mb-2">Ingredients</h2>
-                    <div className="pl-4 text-lg">
+                    <div className="text-lg">
                         {data.recipeIngredientLines.map((riLine, index) => (
                             <RecipeIngredientLine
                                 isAuthenticated={isAuthenticated}
@@ -237,9 +237,15 @@ function RecipePage() {
             )}
             {data.userIsAuthor && (
                 <div>
-                    <div className="flex justify-end px-4 mt-6">
+                    <div className="flex justify-end px-4 mt-6 gap-x-2">
                         <button
-                            className="text-xs px-2 py-1 border-2 rounded-xl border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                            className="text-sm px-2 py-1 border-2 rounded-xl border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors cursor-pointer"
+                            onClick={() => navigate(`/${authorslug}/${slug}/edit`)}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className="text-sm px-2 py-1 border-2 rounded-xl border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
                             onClick={() => setShowModal(true)}
                         >
                             Delete Recipe

@@ -100,7 +100,7 @@ export default function MyIngredientsPage() {
         return <ErrorPage />;
     }
     return (
-        <div className="w-full">
+        <div className="w-full px-4">
             <div className="">
                 <UserIngredientInputArea />
             </div>

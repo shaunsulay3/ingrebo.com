@@ -36,7 +36,7 @@ export default function Navbar({ className }: { className?: string }) {
                     setByMatch(!byMatch);
                 }}
             >
-                {byMatch ? "Show Matches" : "Show Any"}
+                {byMatch ? "Showing Matches" : "Showing Any"}
             </div>
         </nav>
     );

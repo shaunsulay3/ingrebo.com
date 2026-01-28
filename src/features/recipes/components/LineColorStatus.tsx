@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { IngredientIndex } from "./RecipeIngredientLineInputArea";
+import { BadgeCheck, Check, Circle, CircleEllipsis, Search, X } from "lucide-react";
 
 type colors = "green" | "lightGreen" | "red" | "gray" | "lightGray" | "white";
 
@@ -38,8 +39,21 @@ function LineColorStatus({ queryStatus, line, inLineIngredientIndices }: LineCol
     }, [queryStatus, line, inLineIngredientIndices]);
 
     return (
-        <div className=" w-full min-h-6 pt-3.5 flex items-center justify-center relative group ">
-            <div className={`${className} border-2  w-2 h-2 rounded-full`}></div>
+        <div className=" w-full flex items-center justify-center relative group ">
+            {colorStatus === "green" ? (
+                <BadgeCheck className="text-green-800 w-5" />
+            ) : colorStatus === "gray" ? (
+                <Search className="text-gray-600 w-3" />
+            ) : colorStatus === "lightGreen" ? (
+                <Check className="text-green-600 w-3" />
+            ) : colorStatus === "lightGray" ? (
+                <CircleEllipsis className="text-gray-400 w-3" />
+            ) : colorStatus === "red" ? (
+                <X className="text-red-600 w-3" />
+            ) : (
+                <div className={`${className} border-2  w-2 h-2 rounded-full`}></div>
+            )}
+
             {colorStatus !== "white" && (
                 <div className="shadow-2xl absolute top-1/2 left-full -translate-y-1/2 ml-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity delay-100 z-50 border-2 border-gray-100 bg-white rounded-2xl">
                     <div className="p-2 text-sm text-center min-w-60">

@@ -11,37 +11,49 @@ function Sidebar({ className, collapsed }: { className?: string; collapsed: bool
     const menuItems = [
         { label: "Explore", icon: <Compass />, path: "/" },
         { label: "Saved", icon: <Bookmark />, path: "/saved" },
-        { label: "My Ingredients", icon: <Carrot />, path: "/my-ingredients" },
-        { label: "My Recipes", icon: <Utensils />, path: user ? `/${user.slug}` : "/login" },
-        { label: "Create", icon: <SquarePlus />, path: "/create" },
+        {
+            label: "My Recipes",
+            icon: <Utensils />,
+            path: user ? `/${user.slug}` : "/login",
+            className: "mt-4",
+            requiresAuth: true,
+        },
+        { label: "My Ingredients", icon: <Carrot />, path: "/my-ingredients", requiresAuth: true },
+        {
+            label: "Create",
+            icon: <SquarePlus />,
+            path: "/create",
+            className: "mt-4",
+            requiresAuth: true,
+        },
     ];
 
     return (
         <div
             className={`${className} pl-2 pr-4 pb-4
         bg-white h-full  flex flex-col justify-between
-        transition-all duration-300
+        transition-all duration-300 border-r-1 border-gray-200
         ${collapsed ? "w-16" : "w-56"}
       `}
         >
             <div>
-                <a
-                    href="/"
+                <Link
+                    to="/"
                     className={`flex gap-x-2 items-center h-18 max-h-18 ${
                         collapsed ? "justify-center" : ""
                     }`}
                 >
                     <img src="/logo-character.svg" alt="Logo" className="h-8" />
                     {!collapsed && <img src="/logo.svg" alt="Logo" className="h-10" />}
-                </a>
+                </Link>
                 {menuItems.map((item) => (
                     <Link
                         key={item.label}
                         to={item.path}
-                        className={`
+                        className={` ${item.className}
               p-2 hover:bg-gray-100 flex items-center gap-3 rounded-2xl
               ${location.pathname === item.path ? "bg-gray-100 font-semibold" : ""}
-            ${collapsed ? "justify-center" : ""}`}
+            ${collapsed ? "justify-center" : ""} ${item.requiresAuth && !user ? "opacity-60" : ""}`}
                     >
                         <div className="min-w-6 flex justify-center">{item.icon}</div>
                         {!collapsed && <span>{item.label}</span>}

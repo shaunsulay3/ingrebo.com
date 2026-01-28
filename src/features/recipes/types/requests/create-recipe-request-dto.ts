@@ -1,4 +1,5 @@
 export interface CreateRecipeRequestDTO {
+    id: string | undefined;
     name: string;
     cookTime: number;
     prepTime: number;

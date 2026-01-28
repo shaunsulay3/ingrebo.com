@@ -7,6 +7,5 @@ export const logout = async (): Promise<void> => {
 
 export const me = async (): Promise<User> => {
     const response = await api.get<User>("/auth/me");
-    console.log(response.data);
     return response.data;
 };

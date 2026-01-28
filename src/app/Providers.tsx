@@ -13,11 +13,11 @@ const queryClient = new QueryClient({
 function Providers({ children }: { children: React.ReactNode }) {
     return (
         <BrowserRouter>
-            <ByMatchProvider>
-                <AuthProvider>
+            <AuthProvider>
+                <ByMatchProvider>
                     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-                </AuthProvider>
-            </ByMatchProvider>
+                </ByMatchProvider>
+            </AuthProvider>
         </BrowserRouter>
     );
 }

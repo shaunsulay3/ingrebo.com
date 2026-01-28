@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 type ByMatchContextType = {
     byMatch: boolean;
@@ -9,7 +10,10 @@ const ByMatchContext = createContext<ByMatchContextType | undefined>(undefined);
 
 export function ByMatchProvider({ children }: { children: React.ReactNode }) {
     const [byMatch, setByMatch] = useState<boolean>(false);
-    console.log(byMatch);
+    const { isAuthenticated } = useAuth();
+    useEffect(() => {
+        setByMatch(isAuthenticated);
+    }, [isAuthenticated]);
     return (
         <ByMatchContext.Provider value={{ byMatch, setByMatch }}>
             {children}

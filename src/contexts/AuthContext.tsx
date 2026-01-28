@@ -15,7 +15,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-
     const navigate = useNavigate();
     const login = async () => await initialize();
     const logout = async () => {

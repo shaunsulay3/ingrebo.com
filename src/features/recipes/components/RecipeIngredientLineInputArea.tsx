@@ -22,25 +22,51 @@ export type IngredientIndex = {
     searchRecipeIngredientDTO: SearchRecipeIngredientDTO | undefined | null;
 };
 function RecipeIngredientLineInputArea({
+    initialRecipeIngredientLines,
+    initialIngredientIndices,
+    onChangeCompleteNutrientInfo,
     onChange,
 }: {
     onChange: (recipeIngredientLineRequests: RecipeIngredientLineRequestDTO[]) => void;
+    initialRecipeIngredientLines?: string[];
+    initialIngredientIndices?: {
+        start: number;
+        end: number;
+        line: number;
+        selectedVarietyName: string | undefined;
+        specificOptionDescription: string | undefined;
+    }[];
+    onChangeCompleteNutrientInfo: (complete: boolean) => void;
 }) {
     // Create the editor instance
     const editor = useMemo(() => withReact(createEditor()), []);
 
-    const [ingredientIndices, setIngredientIndices] = useState<IngredientIndex[]>([]);
-    const [recipeIngredientLines, setRecipeIngredientLines] = useState<string[]>([]);
+    const [ingredientIndices, setIngredientIndices] = useState<IngredientIndex[]>(
+        !initialIngredientIndices
+            ? []
+            : initialIngredientIndices.map((initIngIdx) => {
+                  return {
+                      ...initIngIdx,
+                      clickedWord: null,
+                      searchRecipeIngredientDTO: undefined,
+                  };
+              })
+    );
+    const [recipeIngredientLines, setRecipeIngredientLines] = useState<string[]>(
+        initialRecipeIngredientLines ?? []
+    );
     const [recipeIngredientLineQueryStatus, setRecipeIngredientLineQueryStatus] = useState<
         string[]
     >([]);
+    const [hasCompleteNutrientInfo, setHasCompleteNutrientInfo] = useState<boolean>(false);
     const lastParentUpdate = useRef<RecipeIngredientLineRequestDTO[]>([]);
     const timersRef = useRef<number[]>([]);
     const prevIngredientIndices = useRef<IngredientIndex[]>([]);
+
     useEffect(() => {
-        // console.log("recipe ingredient lines:", recipeIngredientLines);
-        // console.log("recipe ingredient line query status", recipeIngredientLineQueryStatus);
-    }, [recipeIngredientLines, recipeIngredientLineQueryStatus]);
+        onChangeCompleteNutrientInfo(hasCompleteNutrientInfo);
+    }, [hasCompleteNutrientInfo]);
+
     useEffect(() => {
         const handleClickAnywhere = () => {
             if (ingredientIndices.some((ingIdx) => ingIdx.clickedWord !== null)) {
@@ -56,6 +82,20 @@ function RecipeIngredientLineInputArea({
         };
     }, []);
     useEffect(() => {
+        // check if ingredient indices are complete for nutrient info
+        const incompleteInfo =
+            ingredientIndices.some((ingIdx) => {
+                return (
+                    ingIdx.searchRecipeIngredientDTO === undefined ||
+                    !ingIdx.searchRecipeIngredientDTO?.nutrientFacts
+                );
+            }) || ingredientIndices.length === 0;
+        if (!incompleteInfo !== hasCompleteNutrientInfo) {
+            setHasCompleteNutrientInfo(!incompleteInfo);
+        }
+        console.log("incomplete info", incompleteInfo);
+
+        // check which ingredient indices are new and need to be fetched
         const omit = [
             "clickedWord",
             "searchRecipeIngredientDTO",
@@ -73,7 +113,7 @@ function RecipeIngredientLineInputArea({
         }
         const newIngredientIndices = ingredientIndices.filter((ingIdx) => {
             return (
-                !ingIdx.searchRecipeIngredientDTO &&
+                ingIdx.searchRecipeIngredientDTO === undefined &&
                 !prevIngredientIndices.current.find((prevIngIdx) => {
                     return (
                         ingIdx.start === prevIngIdx.start &&
@@ -167,7 +207,6 @@ function RecipeIngredientLineInputArea({
                 recipeIngredients: recipeIngredientRequestDTOs,
             });
             const newLineIndex = timersRef.current.indexOf(timeoutId);
-            console.log("searched for line index:", newLineIndex);
             if (newLineIndex === -1) return;
             setRecipeIngredientLineQueryStatus((prev) => {
                 const copy = [...prev];
@@ -238,11 +277,18 @@ function RecipeIngredientLineInputArea({
             ];
         });
     }
-    const initialValue: Descendant[] = [
-        {
-            children: [{ text: "" }],
-        },
-    ];
+    // initialize empty or filled depending on whether in edit mode
+    const initialValue: Descendant[] = !initialRecipeIngredientLines
+        ? [
+              {
+                  children: [{ text: "" }],
+              },
+          ]
+        : initialRecipeIngredientLines.map((line) => {
+              return {
+                  children: [{ text: line }],
+              };
+          });
 
     const handleChange = () => {
         let lines: string[] = [];
@@ -315,16 +361,16 @@ function RecipeIngredientLineInputArea({
             }
             if (foundChangeEndIndex) break;
         }
-        console.log("=============================");
-        console.log("Old lines:", oldLines);
-        console.log("New lines:", lines);
-        console.log("=============================");
-        console.log("Change start:", changeStartIndex);
-        console.log("Change start line:", changeStartLineIndex);
-        console.log("Change end:", changeEndIndex);
-        console.log("Change end line:", changeEndLineIndex);
-        console.log("Change end new:", changeEndNewIndex);
-        console.log("Change end line:", changeEndNewLineIndex);
+        // console.log("=============================");
+        // console.log("Old lines:", oldLines);
+        // console.log("New lines:", lines);
+        // console.log("=============================");
+        // console.log("Change start:", changeStartIndex);
+        // console.log("Change start line:", changeStartLineIndex);
+        // console.log("Change end:", changeEndIndex);
+        // console.log("Change end line:", changeEndLineIndex);
+        // console.log("Change end new:", changeEndNewIndex);
+        // console.log("Change end line:", changeEndNewLineIndex);
 
         let newIngredientIndices: IngredientIndex[] = [];
         setRecipeIngredientLines(lines);
@@ -370,38 +416,24 @@ function RecipeIngredientLineInputArea({
         });
         const newTimersRef: number[] = [];
         const newQueryStatuses: string[] = [];
+
         lines.forEach((line, index) => {
             if (index < changeStartLineIndex) {
                 newTimersRef.push(timersRef.current[index]);
                 newQueryStatuses.push(recipeIngredientLineQueryStatus[index]);
-                console.log(line, "1");
                 return;
             }
             const inlineIngredientIndices = newIngredientIndices.filter(
                 (ingIdx) => ingIdx.line === index
             );
-            const priorIndex = index - lines.length + oldLines.length;
-            if (lines.length < oldLines.length) {
-                if (lines[index] === oldLines[priorIndex]) {
-                    newTimersRef.push(timersRef.current[priorIndex]);
-                    newQueryStatuses.push(recipeIngredientLineQueryStatus[priorIndex]);
-                    console.log(line, "2");
-                    return;
-                }
+            const oldIndex = index + (oldLines.length - lines.length);
+            if (line !== oldLines[oldIndex]) {
                 newTimersRef.push(fetchSearchRecipeIngredientLine(line, inlineIngredientIndices));
                 newQueryStatuses.push("loading");
-                console.log(line, "3");
                 return;
             }
-            if (index <= changeEndLineIndex && lines[index] !== oldLines[index]) {
-                newTimersRef.push(fetchSearchRecipeIngredientLine(line, inlineIngredientIndices));
-                newQueryStatuses.push("loading");
-                console.log(line, "4");
-                return;
-            }
-            newTimersRef.push(timersRef.current[priorIndex]);
-            newQueryStatuses.push(recipeIngredientLineQueryStatus[priorIndex]);
-            console.log(line, "5");
+            newTimersRef.push(timersRef.current[oldIndex]);
+            newQueryStatuses.push(recipeIngredientLineQueryStatus[oldIndex]);
             return;
         });
         const newTimersRefSet = new Set(newTimersRef);
@@ -541,7 +573,6 @@ function RecipeIngredientLineInputArea({
             }),
             newIngredientIndex,
         ].filter((ingIdx) => ingIdx.line === newIngredientIndex.line);
-        console.log("Fetching for updated ingredient index:", newIngredientIndex);
         timersRef.current[newIngredientIndex.line] = fetchSearchRecipeIngredientLine(
             recipeIngredientLines[newIngredientIndex.line],
             newInLineIngredientIndices
@@ -675,36 +706,69 @@ function RecipeIngredientLineInputArea({
     }, []);
 
     return (
-        <div className="flex">
-            <div className="ml-2 w-6">
+        <div className="flex max-w-full">
+            <div className="min-w-10 pt-2 ">
                 {recipeIngredientLines.map((_, index) => {
                     const inLineIngredientIndices = ingredientIndices.filter(
                         (ingIdx) => ingIdx.line === index
                     );
                     return (
-                        <LineColorStatus
-                            key={`lcs-${index}`}
-                            queryStatus={recipeIngredientLineQueryStatus[index]}
-                            line={recipeIngredientLines[index]}
-                            inLineIngredientIndices={inLineIngredientIndices}
-                        />
+                        <div className=" flex items-center min-h-6 max-h-6 gap-x-1">
+                            <LineColorStatus
+                                key={`lcs-${index}`}
+                                queryStatus={recipeIngredientLineQueryStatus[index]}
+                                line={recipeIngredientLines[index]}
+                                inLineIngredientIndices={inLineIngredientIndices}
+                            />
+                        </div>
                     );
                 })}
             </div>
-            <Slate
-                editor={editor}
-                initialValue={initialValue}
-                onChange={() => {
-                    handleChange();
-                }}
-            >
-                <Editable
-                    decorate={decorate}
-                    renderLeaf={renderLeaf}
-                    className="border border-gray-400 rounded p-2 w-full"
-                    placeholder="2 cups of flour"
-                />
-            </Slate>
+            <div className="max-w-full">
+                <Slate
+                    editor={editor}
+                    initialValue={initialValue}
+                    onChange={() => {
+                        handleChange();
+                    }}
+                >
+                    <div className="flex border border-gray-400 rounded-xl max-w-full ">
+                        <Editable
+                            decorate={decorate}
+                            renderLeaf={renderLeaf}
+                            className=" p-2 w-80 focus:outline-none min-h-47 min-w-max "
+                            placeholder="2 cups of flour"
+                        />
+                        <div className="pr-2 min-w-max ">
+                            {recipeIngredientLines.map((_, index) => {
+                                const inLineIngredientIndices = ingredientIndices.filter(
+                                    (ingIdx) => ingIdx.line === index
+                                );
+                                return (
+                                    <div
+                                        className="text-md min-h-6 max-h-6 text-right font-extralight italic text-green-800 pt-2 whitespace-nowrap overflow-x-clip"
+                                        style={{
+                                            top: `${index * 1.5}rem`,
+                                        }}
+                                    >
+                                        {inLineIngredientIndices.map((ingIdx, index) => (
+                                            <span className="!m-0 !p-0">
+                                                {ingIdx.searchRecipeIngredientDTO
+                                                    ? ingIdx.searchRecipeIngredientDTO.ingredient
+                                                          .selectedVariety.name
+                                                    : "?"}
+                                                {index < inLineIngredientIndices.length - 1
+                                                    ? "; "
+                                                    : ""}
+                                            </span>
+                                        ))}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </Slate>
+            </div>
         </div>
     );
 }
