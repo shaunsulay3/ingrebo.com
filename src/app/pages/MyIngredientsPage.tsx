@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import UserIngredient from "../../features/user-ingredients/components/UserIngredient";
 import type { UserIngredientDTO } from "../../features/user-ingredients/types/user-ingredient-dto";
 import ErrorPage from "./ErrorPage";
+import LoadingPage from "./LoadingPage";
 
 type UserIngredientObject = {
     categoryIndex: number;
@@ -17,9 +18,10 @@ type UserIngredientObject = {
     userIngredientDTO: UserIngredientDTO;
 };
 export default function MyIngredientsPage() {
-    const { data, isFetching } = useQuery({
+    const { data, isFetching, refetch } = useQuery({
         queryFn: getUserIngredientsCategorized,
         queryKey: ["user-ingredients-categorized"],
+        staleTime: 0,
     });
     const [categories, setCategories] = useState<string[]>([]);
     const [userIngredientObjects, setUserIngredientObjects] = useState<UserIngredientObject[]>([]);
@@ -93,8 +95,15 @@ export default function MyIngredientsPage() {
             }
         }
     };
+    const handleSave = () => {
+        refetch();
+    };
     if (isFetching) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
     if (!data) {
         return <ErrorPage />;
@@ -102,7 +111,7 @@ export default function MyIngredientsPage() {
     return (
         <div className="w-full px-4">
             <div className="">
-                <UserIngredientInputArea />
+                <UserIngredientInputArea onSave={handleSave} />
             </div>
             {categories.length > 0 && (
                 <div className="mt-3 grid grid-cols-2 gap-5">

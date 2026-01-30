@@ -24,7 +24,7 @@ export function UserRecipesPage() {
         return <ErrorPage />;
     }
     return (
-        <div className="px-4">
+        <div className="px-16 mt-8">
             <h1>{data.username}'s Recipes</h1>
             {data.recipeThumbnails.length === 0 && <SoEmpty className="my-40" />}
             <div className="columns-[300px]">

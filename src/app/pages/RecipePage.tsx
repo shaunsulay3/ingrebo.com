@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteRecipe, getRecipe } from "../../api/recipe-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -7,10 +7,18 @@ import { likeRecipe, saveRecipe, unlikeRecipe, unsaveRecipe } from "../../api/in
 import { useAuth } from "../../contexts/AuthContext";
 import RecipeMacroNutrients from "../../features/recipes/components/RecipeMacroNutrients";
 import RecipeNutritionFacts from "../../features/recipes/components/RecipeNutritionFacts";
-import { BadgeCheck, Bookmark, Heart, MessageCircle } from "lucide-react";
+import { BadgeCheck, Bookmark, CirclePlus, Heart, MessageCircle, Minus, Plus } from "lucide-react";
 import CommentsSection from "../../features/recipes/components/CommentsSection";
 import { AxiosError } from "axios";
 import ErrorPage from "./ErrorPage";
+import {
+    deleteUserIngredient,
+    deleteUserIngredientByName,
+    saveIngredients,
+} from "../../api/user-ingredient-api";
+import type { IngredientDTO } from "../../features/recipes/types/ingredient-dto";
+import type { RecipeIngredientLineDTO } from "../../features/recipes/types/recipe-ingredient-line-dto";
+import toast from "react-hot-toast";
 
 function RecipePage() {
     const navigate = useNavigate();
@@ -22,13 +30,55 @@ function RecipePage() {
     const [showModal, setShowModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [openRecipeIngredientId, setOpenRecipeIngredientId] = useState<string>("");
+    const [recipeIngredientLineMatches, setRecipeIngredientLineMatches] = useState<
+        { has: boolean; flipped: boolean }[]
+    >([]);
+    const userIngredientRequestQueue = useRef<
+        { name: string; selectedVarietyName: string; add: boolean }[]
+    >([]);
+    const queueRunning = useRef<boolean>(false);
     const { isAuthenticated, user } = useAuth();
     const { isFetching, data, error } = useQuery({
         queryKey: ["recipe", authorslug, slug],
         queryFn: () => getRecipe(authorslug ?? "", slug ?? ""),
-        staleTime: 0,
         refetchOnWindowFocus: false,
     });
+    const enqueue = (ingredientRequest: {
+        name: string;
+        selectedVarietyName: string;
+        add: boolean;
+    }) => {
+        userIngredientRequestQueue.current.push(ingredientRequest);
+        runQueue();
+    };
+    const runQueue = async () => {
+        if (queueRunning.current) return;
+        queueRunning.current = true;
+        try {
+            while (userIngredientRequestQueue.current.length > 0) {
+                const request = userIngredientRequestQueue.current.shift();
+                if (!request) break;
+                if (request.add) {
+                    await saveIngredients([
+                        {
+                            name: request.name,
+                            selectedVarietyName: request.selectedVarietyName,
+                        },
+                    ]);
+                    toast.success(`Added ${request.name} to your ingredients`);
+                } else {
+                    await deleteUserIngredientByName(request.name);
+                    toast.success(`Removed ${request.name} from your ingredients`);
+                }
+            }
+        } catch (error) {
+            toast.error("An error occurred while updating your ingredients. Reloading the page.");
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            window.location.reload();
+        }
+
+        queueRunning.current = false;
+    };
     useEffect(() => {
         const handleClickAnywhere = () => {
             setOpenRecipeIngredientId("");
@@ -47,6 +97,16 @@ function RecipePage() {
         setIsLiked(interactions.isLiked);
         setSaveCount(interactions.saves);
         setIsSaved(interactions.isSaved);
+        setRecipeIngredientLineMatches(() => {
+            return data.recipeIngredientLines.map((riLine) => {
+                return {
+                    has: riLine.recipeIngredients.every((ri) => {
+                        return ri.ingredientMatch.status === "match";
+                    }),
+                    flipped: false,
+                };
+            });
+        });
     }, [data]);
     const deleteMutation = useMutation({
         mutationFn: async () => {
@@ -133,14 +193,78 @@ function RecipePage() {
             });
         }
     };
+    const handleAddRemoveIngredientLine = async (lineIndex: number) => {
+        setRecipeIngredientLineMatches((prev) => {
+            const oldMatch = prev[lineIndex];
+            const newMatches = [...prev];
+            newMatches[lineIndex] = {
+                flipped: !oldMatch.flipped,
+                has: oldMatch.has,
+            };
+            return newMatches;
+        });
+        const riLineMatch = recipeIngredientLineMatches[lineIndex];
+        const hasIngredient = riLineMatch.has !== riLineMatch.flipped;
+        const riLine = data.recipeIngredientLines[lineIndex];
+        const reqs = riLine.recipeIngredients.map((ri) => {
+            return {
+                name: ri.ingredient.name,
+                selectedVarietyName: ri.ingredient.selectedVariety.name,
+                add: !hasIngredient,
+            };
+        });
+        reqs.forEach((req) => enqueue(req));
+    };
+    const handleAddAllIngredients = async () => {};
+    const getNewMatchRecipeIngredientLineDTO = (
+        riLine: RecipeIngredientLineDTO,
+        index: number
+    ): RecipeIngredientLineDTO => {
+        let newRiLineDTO = { ...riLine };
+        const riLineMatch = recipeIngredientLineMatches[index];
+        if (riLineMatch && riLineMatch.flipped && !riLineMatch.has) {
+            newRiLineDTO.recipeIngredients = newRiLineDTO.recipeIngredients.map((ri) => {
+                const newMatchingIngredient: IngredientDTO = {
+                    name: ri.ingredient.name,
+                    selectedVariety: ri.ingredient.selectedVariety,
+                };
+                return {
+                    ...ri,
+                    ingredientMatch: {
+                        ...ri.ingredientMatch,
+                        status: "match",
+                        matchingIngredients: [
+                            ...ri.ingredientMatch.matchingIngredients,
+                            newMatchingIngredient,
+                        ],
+                    },
+                };
+            });
+        }
+        if (riLineMatch && riLineMatch.flipped && riLineMatch.has) {
+            newRiLineDTO.recipeIngredients = newRiLineDTO.recipeIngredients.map((ri) => {
+                return {
+                    ...ri,
+                    ingredientMatch: {
+                        ...ri.ingredientMatch,
+                        status: "no-match",
+                        matchingIngredients: [],
+                    },
+                };
+            });
+        }
+        return newRiLineDTO;
+    };
     return (
-        <div className="px-4">
-            <div className="flex flex-wrap-reverse gap-y-4 gap-x-8 justify-center border-2 border-gray-100 rounded-2xl px-8 py-8">
-                <div className="rounded-2xl flex-1 flex flex-col justify-center min-w-[280px] max-w-[600px]">
-                    <h1 className="!m-0">{data.name}</h1>
-                    <div className="mb-6">{data.description}</div>
+        <div className="mt-8">
+            <div className="flex flex-wrap justify-center gap-y-8">
+                <div className="flex flex-col justify-center flex-1 min-w-80 pl-14 pr-7">
+                    <div className="text-5xl font-bold mb-6">{data.name}</div>
                     <div className="!m-0">
-                        By <Link to={`/${authorslug}`}>{data.author}</Link>
+                        By{" "}
+                        <Link to={`/${authorslug}`}>
+                            <span className="underline hover:text-green-900">{data.author} </span>
+                        </Link>
                     </div>
                     <div className="text-gray-500">
                         {new Date(data.createdOn).toLocaleDateString("en-US", {
@@ -165,17 +289,15 @@ function RecipePage() {
                     </div>
                 </div>
                 {data.imageUrl && (
-                    <div className="flex min-w-[250px] max-w-[450px] items-center">
-                        <div className="aspect-[4/3]">
-                            <img
-                                src={data.imageUrl}
-                                className="object-cover rounded-2xl w-full h-full"
-                            />
-                        </div>
+                    <div className="aspect-[4/3] flex-1 min-w-150 lg:px-4">
+                        <img src={data.imageUrl} className="object-cover w-full h-full" />
                     </div>
                 )}
             </div>
-            <div className="flex justify-between gap-x-2 px-8 py-4 border-2 rounded-2xl border-gray-100 mt-2 h-fit text-base text-gray-700">
+            <div className="px-8 sm:px-16 py-6 border-y-1 mt-6 border-gray-200">
+                {data.description}
+            </div>
+            <div className="flex items-center justify-between gap-x-2 px-8 sm:px-16 py-3 border-b-1 border-gray-200 h-fit text-base">
                 <div className=" px-2  text-center">
                     <div className="font-semibold">Servings</div>
                     <div>{data.servings}</div>
@@ -193,22 +315,52 @@ function RecipePage() {
                     <div>{data.cookTime} min.</div>
                 </div>
             </div>
-            <div className="flex flex-wrap mt-4 gap-5">
-                <div className="px-8 py-4 rounded-2xl border-gray-100 border-2 w-fit">
-                    <h2 className="!mb-2">Ingredients</h2>
-                    <div className="text-lg">
-                        {data.recipeIngredientLines.map((riLine, index) => (
-                            <RecipeIngredientLine
-                                isAuthenticated={isAuthenticated}
-                                recipeIngredientLineDTO={riLine}
-                                key={index}
-                                onToggleOpenRecipeIngredient={handleToggleOpenRecipeIngredient}
-                                openRecipeIngredientId={openRecipeIngredientId}
-                            />
-                        ))}
+            <div className="flex flex-wrap mt-6 gap-y-6">
+                <div className="pr-16 w-fit">
+                    <h2 className="!mb-2 px-16">Ingredients</h2>
+                    <div className="text-lg pl-8">
+                        {data.recipeIngredientLines.map((riLine, index) => {
+                            const riLineMatch = recipeIngredientLineMatches[index];
+                            const newRiLineDTO = getNewMatchRecipeIngredientLineDTO(riLine, index);
+                            return (
+                                <div className="flex" key={"riLine" + index}>
+                                    {!isAuthenticated || !riLineMatch ? (
+                                        <div className="mr-8" />
+                                    ) : riLineMatch.has === riLineMatch.flipped ? (
+                                        <CirclePlus
+                                            className="w-5 text-gray-300 mr-3 hover:text-green-600 cursor-pointer"
+                                            onClick={() => handleAddRemoveIngredientLine(index)}
+                                        />
+                                    ) : (
+                                        <Minus
+                                            className="w-5 text-gray-300 mr-3 hover:text-red-600 cursor-pointer"
+                                            onClick={() => handleAddRemoveIngredientLine(index)}
+                                        />
+                                    )}
+                                    <RecipeIngredientLine
+                                        isAuthenticated={isAuthenticated}
+                                        recipeIngredientLineDTO={newRiLineDTO}
+                                        key={index}
+                                        onToggleOpenRecipeIngredient={
+                                            handleToggleOpenRecipeIngredient
+                                        }
+                                        openRecipeIngredientId={openRecipeIngredientId}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {/* <div className="text-sm ml-16 mt-6 rounded-xl cursor-pointer border-1 px-4 py-2 text-green-800 border-green-800 hover:bg-green-800 hover:text-white w-fit">
+                        Add these ingredients to ingredient list
+                    </div>
+                    <div className="text-sm ml-16 mt-2 rounded-xl cursor-pointer border-1 px-4 py-2 text-red-600 border-red-600 hover:bg-red-600 hover:text-white w-fit">
+                        Remove these ingredients from ingredient list
+                    </div> */}
+                    <div>
+                        <CirclePlus /> Add Ingredient
                     </div>
                 </div>
-                <div className="flex-1 min-w-100 w-full border-2 border-gray-100 rounded-2xl px-8 py-4">
+                <div className="flex-1 min-w-100 w-full px-16">
                     <h2 className="!mb-2">Preparation</h2>
                     <div className="pl-2">
                         {data.preparation.map((step, index) => (
@@ -253,10 +405,7 @@ function RecipePage() {
                     </div>
                 </div>
             )}
-            <div className="bg-gray-300 max-h-1 my-6 flex justify-center items-center rounded-2xl overflow-visible">
-                <MessageCircle className="z-50 bg-white text-gray-300" size={30} />
-            </div>
-            <div className="mt-10 px-8 py-4 border-2 rounded-2xl border-gray-100">
+            <div className="mt-10 px-8 mx-8 border-1 border-gray-200 py-4 rounded-2xl">
                 <CommentsSection recipeId={data.id} />
             </div>
             <div className="h-20"></div>

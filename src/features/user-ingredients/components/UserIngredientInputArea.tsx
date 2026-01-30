@@ -15,7 +15,7 @@ type Ingredient = {
     variety: string | null;
     isOpen: boolean;
 };
-export default function UserIngredientInputArea() {
+export default function UserIngredientInputArea({ onSave }: { onSave: () => void }) {
     const [input, setInput] = useState<string>("");
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [ingredientError, setIngredientError] = useState<Ingredient | null>(null);
@@ -50,9 +50,7 @@ export default function UserIngredientInputArea() {
 
     const mutation = useMutation({
         mutationFn: saveIngredients,
-        onSuccess: () => {
-            window.location.reload();
-        },
+        onSuccess: onSave,
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {

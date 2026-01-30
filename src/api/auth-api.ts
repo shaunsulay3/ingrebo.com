@@ -6,6 +6,6 @@ export const logout = async (): Promise<void> => {
 };
 
 export const me = async (): Promise<User> => {
-    const response = await api.get<User>("/auth/me");
+    const response = await api.get<User>("/auth/me", { meta: { ignore401: true } });
     return response.data;
 };

@@ -10,7 +10,7 @@ function Sidebar({ className, collapsed }: { className?: string; collapsed: bool
 
     const menuItems = [
         { label: "Explore", icon: <Compass />, path: "/" },
-        { label: "Saved", icon: <Bookmark />, path: "/saved" },
+        { label: "Saved", icon: <Bookmark />, path: "/saved", requiresAuth: true },
         {
             label: "My Recipes",
             icon: <Utensils />,
@@ -49,7 +49,7 @@ function Sidebar({ className, collapsed }: { className?: string; collapsed: bool
                 {menuItems.map((item) => (
                     <Link
                         key={item.label}
-                        to={item.path}
+                        to={!item.requiresAuth || user ? item.path : "/login"}
                         className={` ${item.className}
               p-2 hover:bg-gray-100 flex items-center gap-3 rounded-2xl
               ${location.pathname === item.path ? "bg-gray-100 font-semibold" : ""}

@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import InputBox from "./InputBox";
 import { Search } from "lucide-react";
 import { useByMatch } from "../contexts/ByMatchContext";
-export default function Navbar({ className }: { className?: string }) {
+import { useAuth } from "../contexts/AuthContext";
+export default function Navbar() {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const { byMatch, setByMatch } = useByMatch();
     const [searchInput, setSearchInput] = useState<string>("");
     return (
@@ -31,8 +33,12 @@ export default function Navbar({ className }: { className?: string }) {
                     byMatch
                         ? "bg-green-800 text-white "
                         : "bg-gray-100 text-gray-400 hover:bg-green-100"
-                } rounded-2xl w-50 items-center flex h-11 justify-center  cursor-pointer transition-colors duration-300`}
+                } rounded-2xl w-fit whitespace-nowrap px-2 text-sm items-center flex h-11 justify-center  cursor-pointer transition-colors duration-300`}
                 onClick={() => {
+                    if (!isAuthenticated) {
+                        navigate("/login");
+                        return;
+                    }
                     setByMatch(!byMatch);
                 }}
             >

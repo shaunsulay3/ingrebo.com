@@ -39,7 +39,7 @@ export default function RecipeIngredient({
             default:
                 setColorStyle("bg-gray-100");
         }
-    }, []);
+    }, [recipeIngredientDTO.ingredientMatch]);
     useEffect(() => {
         if (openRecipeIngredientId === id) {
             setIsOpen(true);
@@ -60,25 +60,31 @@ export default function RecipeIngredient({
             {isOpen && (
                 <div className="absolute top-1/2 left-full -translate-y-1/2 ml-2 z-50 cursor-default flex flex-col gap-2">
                     <div className="border-2 border-gray-200 rounded-2xl px-4 py-2 min-w-70 bg-white">
-                        <h4 className="!m-0">{recipeIngredientDTO.specificOption}</h4>
+                        <h4 className="!m-0">
+                            {recipeIngredientDTO.specificOption ??
+                                recipeIngredientDTO.ingredient.selectedVariety.name}
+                        </h4>
                         <p className="!m-0 text-sm">
                             <i>{recipeIngredientDTO.ingredient.selectedVariety.category}</i>
                         </p>
                     </div>
-                    <div className="border-2 border-gray-200 rounded-2xl px-4 py-2 w-fit bg-white">
-                        {recipeIngredientDTO.amounts.map((amount, index) => {
-                            return (
-                                <p className="!m-0 text-base">
-                                    {index === 0 ? "Amount: " : ""}
-                                    {amount.quantity}
-                                    {amount.quantityMax !== amount.quantity
-                                        ? `-${amount.quantityMax}`
-                                        : ""}{" "}
-                                    {amount.unit}
-                                </p>
-                            );
-                        })}
-                    </div>
+                    {recipeIngredientDTO.amounts.length > 0 && (
+                        <div className="border-2 border-gray-200 rounded-2xl px-4 py-2 w-fit bg-white">
+                            {recipeIngredientDTO.amounts.map((amount, index) => {
+                                return (
+                                    <p className="!m-0 text-base">
+                                        {index === 0 ? "Amount: " : ""}
+                                        {amount.quantity}
+                                        {amount.quantityMax !== amount.quantity
+                                            ? `-${amount.quantityMax}`
+                                            : ""}{" "}
+                                        {amount.unit}
+                                    </p>
+                                );
+                            })}
+                        </div>
+                    )}
+
                     <div
                         className={`border-2 border-gray-200 rounded-2xl px-4 py-2 w-fit bg-white ${popupStyle}`}
                     >

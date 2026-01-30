@@ -3,6 +3,7 @@ import { getSavedRecipes } from "../../api/recipe-api";
 import RecipeThumbnail from "../../features/recipes/components/RecipeThumbnail";
 import ErrorPage from "./ErrorPage";
 import SoEmpty from "../../components/SoEmpty";
+import LoadingPage from "./LoadingPage";
 
 export default function SavePage() {
     const { data, isFetching } = useQuery({
@@ -13,13 +14,17 @@ export default function SavePage() {
         refetchOnWindowFocus: false,
     });
     if (isFetching) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
     if (!data) {
         return <ErrorPage />;
     }
     return (
-        <div className="px-4">
+        <div className="px-16 mt-8">
             <h1>Your Saved Recipes</h1>
             {data.length === 0 && <SoEmpty className="my-40" />}
             <div className="columns-[250px]">

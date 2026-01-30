@@ -14,6 +14,8 @@ import type { RecipeIngredientLineRequestDTO } from "../../features/recipes/type
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createRecipe, getRecipe } from "../../api/recipe-api";
 import { BadgeCheck, LockIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import LoadingPage from "./LoadingPage";
 
 function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     const [editDataSet, setEditDataSet] = useState<boolean>(false);
@@ -47,7 +49,20 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     }
 
     const mutation = useMutation({
-        mutationFn: createRecipe,
+        mutationFn: ({
+            recipeData,
+            imageFile,
+        }: {
+            recipeData: CreateRecipeRequestDTO;
+            imageFile: File | null;
+        }) =>
+            toast.promise(createRecipe({ recipeData, imageFile }), {
+                loading: `${
+                    edit ? "Saving your changes" : "Creating recipe"
+                }... Please don't leave the page...`,
+                success: `${edit ? "Recipe updated" : "Recipe created"} successfully!`,
+                error: `Could not ${edit ? "update" : "create"} recipe. Please try again later.`,
+            }),
         onSuccess: () => {
             navigate(`/${user?.slug}`); // Navigate to user's profile page after creation
         },
@@ -130,7 +145,11 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
         : "border-gray-400 text-gray-400 cursor-not-allowed";
 
     if (edit && isFetching) {
-        return <div>Loading recipe data...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
     if (edit && !data) {
         return <div>Failed to load recipe data.</div>;
@@ -308,16 +327,13 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                     />
                 </div>
             </div>
-            <div className="flex items-center  ">
+            <div className="flex items-center px-16">
                 <button
                     className={`border-2 rounded-2xl px-4 py-2 mr-5 ${createButtonStyle}`}
                     onClick={() => handleCreate()}
                 >
                     {edit ? "Save Changes" : "Create"}
                 </button>
-                {mutation.isPending && (
-                    <div>{edit ? "Saving..." : "Creating Recipe..."}Please wait...</div>
-                )}
                 {mutation.isIdle && erroMessage && (
                     <div className="text-red-500">
                         <i>{erroMessage}</i>

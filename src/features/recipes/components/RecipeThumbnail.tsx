@@ -36,7 +36,9 @@ function RecipeThumbnail({ recipeThumbnail }: RecipeThumbnailProps) {
                 </div>
                 <div className="flex flex-col justify-start w-full truncate pt-1">
                     <Link to={`/${recipeThumbnail.authorSlug}`}>
-                        <p className="!m-0 truncate text-right">{recipeThumbnail.author}</p>
+                        <p className="!m-0 truncate text-right hover:text-green-900">
+                            {recipeThumbnail.author}
+                        </p>
                     </Link>
                 </div>
             </div>

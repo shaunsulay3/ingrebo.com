@@ -33,6 +33,11 @@ export const deleteUserIngredient = async (id: string): Promise<void> => {
     return;
 };
 
+export const deleteUserIngredientByName = async (name: string): Promise<void> => {
+    await api.delete(`/user-ingredients/by-name/${encodeURIComponent(name)}`);
+    return;
+};
+
 export const updateUserIngredient = async (
     id: string,
     selectedVarietyName: string

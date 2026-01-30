@@ -4,6 +4,7 @@ import { searchRecipe } from "../../api/recipe-api";
 import RecipeThumbnail from "../../features/recipes/components/RecipeThumbnail";
 import { useByMatch } from "../../contexts/ByMatchContext";
 import ErrorPage from "./ErrorPage";
+import LoadingPage from "./LoadingPage";
 
 export default function SearchPage() {
     const [searchParams] = useSearchParams();
@@ -21,7 +22,11 @@ export default function SearchPage() {
         refetchOnWindowFocus: false,
     });
     if (isFetching) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
     if (!data) {
         return <ErrorPage />;
