@@ -61,21 +61,19 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                     edit ? "Saving your changes" : "Creating recipe"
                 }... Please don't leave the page...`,
                 success: `${edit ? "Recipe updated" : "Recipe created"} successfully!`,
-                error: `Could not ${edit ? "update" : "create"} recipe. Please try again later.`,
             }),
         onSuccess: () => {
-            navigate(`/${user?.slug}`); // Navigate to user's profile page after creation
+            window.location.href = `/${user?.slug}`; // Navigate to user's profile page after creation
         },
         onError: (error: any) => {
-            setErrorMessage(
-                error?.response?.data?.message ||
+            toast.error(
+                error?.response?.data?.message ??
                     "An error occurred while creating the recipe. Please try again later."
             );
         },
     });
 
     useEffect(() => {
-        console.log(request);
         if (createButtonClickable) {
             return;
         }
@@ -117,6 +115,12 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
         }
         if (!request.recipeIngredientLines || request.recipeIngredientLines.length === 0) {
             setErrorMessage("At least one ingredient line is required");
+            return null;
+        }
+        if (!request.recipeIngredientLines.some((line) => line.recipeIngredients.length > 0)) {
+            setErrorMessage(
+                "Your recipe has no ingredients. If you don't have any highlighted ingredients, please double click them to search and add."
+            );
             return null;
         }
         if (!request.preparation || request.preparation.length === 0) {

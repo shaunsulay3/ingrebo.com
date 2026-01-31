@@ -33,20 +33,23 @@ export default function RecipeIngredientLine({
         });
         lastIndex = endIndex;
     }
+    sentenceParts.push(line.slice(lastIndex, line.length));
     return (
         <div className="mb-1">
             {sentenceParts.map((sentencePart, index) => {
                 return (
                     <span>
                         {sentencePart}
-                        <RecipeIngredient
-                            key={index}
-                            name={ingredientParts[index].name}
-                            recipeIngredientDTO={ingredientParts[index].recipeIngredient}
-                            onToggleOpen={(id) => onToggleOpenRecipeIngredient(id)}
-                            openRecipeIngredientId={openRecipeIngredientId}
-                            isAuthenticated={isAuthenticated}
-                        />
+                        {ingredientParts[index] && (
+                            <RecipeIngredient
+                                key={index}
+                                name={ingredientParts[index].name}
+                                recipeIngredientDTO={ingredientParts[index].recipeIngredient}
+                                onToggleOpen={(id) => onToggleOpenRecipeIngredient(id)}
+                                openRecipeIngredientId={openRecipeIngredientId}
+                                isAuthenticated={isAuthenticated}
+                            />
+                        )}
                     </span>
                 );
             })}

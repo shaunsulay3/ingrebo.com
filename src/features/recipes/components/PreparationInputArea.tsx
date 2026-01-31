@@ -25,10 +25,10 @@ export default function PreparationInputArea({
         });
     }
 
-    function handleAddStep(index: number) {
+    function handleAddStep(index: number, byEnter: boolean) {
         setSteps((prev) => {
             let newSteps = prev;
-            if (index === prev.length - 1) {
+            if (index === prev.length - 1 || !byEnter) {
                 newSteps = [...prev.slice(0, index + 1), "", ...prev.slice(index + 1)];
             }
             // Focus the next textarea after DOM updates
@@ -84,7 +84,7 @@ const PreparationStep = forwardRef<
         index: number;
         onChange: (value: string, index: number) => void;
         onDelete: (index: number, focusBack?: boolean) => void;
-        onAddStep: (index: number) => void;
+        onAddStep: (index: number, byEnter: boolean) => void;
         value: string;
     }
 >(({ placeholder, index, onChange, onAddStep, onDelete, value }, ref) => {
@@ -93,7 +93,7 @@ const PreparationStep = forwardRef<
             {index === 0 && (
                 <div
                     className="w-full group min-h-6 cursor-pointer text-black text-xs flex justify-center items-center"
-                    onClick={() => onAddStep(index)}
+                    onClick={() => onAddStep(index, false)}
                 >
                     <div className="h-[2px] w-full mx-20 bg-gray-200 group-hover:bg-green-800 duration-150 flex justify-center items-center">
                         <PlusCircle className="bg-white h-4 text-gray-300 group-hover:text-green-800" />
@@ -107,7 +107,7 @@ const PreparationStep = forwardRef<
                 <TextAreaBox
                     placeholder={placeholder}
                     onChange={(value) => onChange(value, index)}
-                    onEnter={() => onAddStep(index)}
+                    onEnter={() => onAddStep(index, true)}
                     onBackspace={() => {
                         if (value.length === 0) {
                             onDelete(index, true);
@@ -126,7 +126,7 @@ const PreparationStep = forwardRef<
             </div>
             <div
                 className="w-full group min-h-6 cursor-pointer text-black text-xs flex justify-center items-center"
-                onClick={() => onAddStep(index)}
+                onClick={() => onAddStep(index, false)}
             >
                 <div className="h-[2px] w-full mx-20 bg-gray-200 group-hover:bg-green-800 duration-150 flex justify-center items-center">
                     <PlusCircle className="bg-white h-4 text-gray-300 group-hover:text-green-800" />

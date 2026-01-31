@@ -93,8 +93,6 @@ function RecipeIngredientLineInputArea({
         if (!incompleteInfo !== hasCompleteNutrientInfo) {
             setHasCompleteNutrientInfo(!incompleteInfo);
         }
-        console.log("incomplete info", incompleteInfo);
-
         // check which ingredient indices are new and need to be fetched
         const omit = [
             "clickedWord",

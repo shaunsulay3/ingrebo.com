@@ -19,6 +19,7 @@ import {
 import type { IngredientDTO } from "../../features/recipes/types/ingredient-dto";
 import type { RecipeIngredientLineDTO } from "../../features/recipes/types/recipe-ingredient-line-dto";
 import toast from "react-hot-toast";
+import LoadingPage from "./LoadingPage";
 
 function RecipePage() {
     const navigate = useNavigate();
@@ -123,7 +124,11 @@ function RecipePage() {
         },
     });
     if (isFetching) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
     if (!data) {
         if (error instanceof AxiosError && error.response?.status === 404) {
@@ -356,9 +361,6 @@ function RecipePage() {
                     <div className="text-sm ml-16 mt-2 rounded-xl cursor-pointer border-1 px-4 py-2 text-red-600 border-red-600 hover:bg-red-600 hover:text-white w-fit">
                         Remove these ingredients from ingredient list
                     </div> */}
-                    <div>
-                        <CirclePlus /> Add Ingredient
-                    </div>
                 </div>
                 <div className="flex-1 min-w-100 w-full px-16">
                     <h2 className="!mb-2">Preparation</h2>

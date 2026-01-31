@@ -10,7 +10,6 @@ export default function SearchPage() {
     const [searchParams] = useSearchParams();
     const { byMatch } = useByMatch();
     const q = searchParams.get("q");
-    console.log(q);
     if (!q || q.trim() === "") {
     }
     const { data, isFetching } = useQuery({

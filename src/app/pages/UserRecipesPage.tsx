@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 import ErrorPage from "./ErrorPage";
 import SoEmpty from "../../components/SoEmpty";
+import LoadingPage from "./LoadingPage";
 
 export function UserRecipesPage() {
     const { slug } = useParams();
@@ -14,7 +15,11 @@ export function UserRecipesPage() {
         retry: false,
     });
     if (isPending) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <LoadingPage />
+            </div>
+        );
     }
 
     if (!data) {

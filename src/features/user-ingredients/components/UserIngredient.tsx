@@ -49,7 +49,6 @@ export default function UserIngredient({
         }
     }, [data]);
     useEffect(() => {
-        if (isOpen) console.log("THIS IS OPEN", name);
         if (isChooseVariety) {
             setIsChooseVariety(false);
         }

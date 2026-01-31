@@ -11,6 +11,7 @@ import {
 } from "../../../api/interaction-api";
 import type { CommentDTO } from "../../interaction/types/comment-dto";
 import { Heart } from "lucide-react";
+import LoadingPage from "../../../app/pages/LoadingPage";
 
 export default function CommentsSection({ recipeId }: { recipeId: string }) {
     const queryClient = useQueryClient();
@@ -70,7 +71,9 @@ export default function CommentsSection({ recipeId }: { recipeId: string }) {
                 </div>
             )}
             {isFetching ? (
-                <div>Loading...</div>
+                <div>
+                    <LoadingPage />
+                </div>
             ) : !data ? (
                 <div>Error getting recipes</div>
             ) : data.comments.length === 0 ? (

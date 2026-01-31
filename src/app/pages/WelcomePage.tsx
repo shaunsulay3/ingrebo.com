@@ -23,7 +23,6 @@ export default function WelcomePage() {
             setUsername(user.username);
         }
     }, [user]);
-    console.log("User in WelcomePage:", user);
     return (
         <div className="relative h-screen overflow-hidden">
             <div

@@ -46,7 +46,6 @@ export const createRecipe = async ({
     if (imageFile) {
         formData.append("image", imageFile);
     }
-    console.log(recipeData, imageFile);
     await api.post("/recipes", formData, { headers: { "Content-Type": "multipart/form-data" } });
 };
 
