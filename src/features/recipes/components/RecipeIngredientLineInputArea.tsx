@@ -225,9 +225,9 @@ function RecipeIngredientLineInputArea({
                             ? ingIdx.selectedVarietyName
                             : matchingDTO.ingredient.selectedVariety.name,
                         searchRecipeIngredientDTO: matchingDTO,
-                        specificOptionDescription: ingIdx.specificOptionDescription
-                            ? ingIdx.specificOptionDescription
-                            : undefined,
+                        specificOptionDescription: matchingDTO.specificOption
+                            ? matchingDTO.specificOption
+                            : ingIdx.specificOptionDescription,
                     };
                 }
                 return {
@@ -255,6 +255,7 @@ function RecipeIngredientLineInputArea({
                     searchRecipeIngredientDTO: dto,
                 }))
             );
+            console.log(newIngredientIndices);
             updateWithNewIngredientIndices(newIngredientIndices);
         }, 1000);
         return timeoutId;
@@ -628,6 +629,7 @@ function RecipeIngredientLineInputArea({
                                                 {
                                                     ...ingredientIndex,
                                                     selectedVarietyName: name,
+                                                    specificOptionDescription: undefined,
                                                 },
                                                 true
                                             );

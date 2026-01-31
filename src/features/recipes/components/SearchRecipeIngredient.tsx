@@ -22,12 +22,20 @@ function SearchRecipeIngredient({
     const warningBgColor = "bg-yellow-100";
 
     return (
-        <div className={"min-w-100 w-auto bg-white border"} onClick={(e) => e.stopPropagation()}>
-            <div
-                className="pl-2 pt-2 flex items-center cursor-pointer hover:bg-gray-200 transition-colors duration-150 text-2xl"
-                onClick={() => setWindowMode("variety")}
-            >
+        <div
+            className={"min-w-100 w-auto bg-white rounded-xl border-2 border-gray-200"}
+            onClick={(e) => e.stopPropagation()}
+        >
+            <div className="px-2 pt-2 flex items-center text-2xl gap-4">
                 <b>{selectedVarietyName}</b>
+                {windowMode === null && (
+                    <div
+                        className="text-sm rounded-xl text-center px-2 border-gray-200 text-gray-600 border-2 cursor-pointer hover:bg-gray-400 hover:border-gray-400 hover:text-white"
+                        onClick={() => setWindowMode("variety")}
+                    >
+                        change variety
+                    </div>
+                )}
             </div>
             {windowMode === "variety" && (
                 <div className="pl-2 max-h-[50vh] mb-4 overflow-scroll">
@@ -74,13 +82,16 @@ function SearchRecipeIngredient({
             )}
             {windowMode === null && (
                 <div>
-                    <div
-                        className="pl-2 flex items-center hover:bg-gray-200 transition-colors duration-150"
-                        onClick={() => setWindowMode("option")}
-                    >
+                    <div className="px-2 flex items-center duration-150 gap-4">
                         {specificOptionDescription
                             ? specificOptionDescription
                             : "Select a specific option"}
+                        <div
+                            className="text-sm text-center rounded-xl px-2 border-gray-200 text-gray-600 border-2 cursor-pointer hover:bg-gray-400 hover:border-gray-400 hover:text-white"
+                            onClick={() => setWindowMode("option")}
+                        >
+                            change option
+                        </div>
                     </div>
                     {!specificOptionDescription && (
                         <div className={`pl-2 mt-2 mb-5 ${warningBgColor}`}>
@@ -93,7 +104,9 @@ function SearchRecipeIngredient({
             {specificOptionDescription && windowMode === null && (
                 <div>
                     {amounts.length === 0 && (
-                        <div className={`pl-2 mt-2 mb-5 ${warningBgColor}`}>
+                        <div
+                            className={`pl-2 mt-2 mb-5 ${warningBgColor} overflow-y-auto overflow-x-hidden max-h-70 sc`}
+                        >
                             <div>
                                 This line has no amounts. To get nutritional information try
                                 specifying an amount.
@@ -107,7 +120,7 @@ function SearchRecipeIngredient({
                                     {searchRecipeIngredientDTO.possibleUnits
                                         .filter((unit) => unit.length < 20)
                                         .join(", ")
-                                        .concat("grams, lbs, ounce")}
+                                        .concat(", grams")}
                                 </i>
                             </div>
                         </div>
