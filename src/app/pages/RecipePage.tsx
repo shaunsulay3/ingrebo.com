@@ -20,6 +20,7 @@ import type { IngredientDTO } from "../../features/recipes/types/ingredient-dto"
 import type { RecipeIngredientLineDTO } from "../../features/recipes/types/recipe-ingredient-line-dto";
 import toast from "react-hot-toast";
 import LoadingPage from "./LoadingPage";
+import ShareButton from "../../components/ShareButton";
 
 function RecipePage() {
     const navigate = useNavigate();
@@ -290,7 +291,11 @@ function RecipePage() {
                             }`}
                             onClick={handleClickSave}
                         />
-                        <span>{saveCount}</span>
+                        <span className="mr-4">{saveCount}</span>
+                        <ShareButton
+                            copy={`${window.location.origin}/${authorslug}/${slug}`}
+                            onClickText={`${data.name} copied to clipboard!`}
+                        />
                     </div>
                 </div>
                 {data.imageUrl && (
@@ -379,13 +384,17 @@ function RecipePage() {
                     <div className="bg-green-800 max-h-1 my-6 flex justify-center items-center rounded-2xl overflow-visible">
                         <BadgeCheck className="z-50 bg-white text-green-800" size={30} />
                     </div>
-                    <div className="flex flex-wrap gap-5 items-stretch">
+                    <div className="flex flex-wrap gap-5 items-stretch px-8">
                         <div className="border-2 border-gray-100 rounded-2xl min-w-[300px] flex items-center flex-1">
                             <RecipeMacroNutrients nutrientFactsDTO={data.nutrientFacts} />
                         </div>
                         <div className="flex-1">
                             <RecipeNutritionFacts nutrientFactsDTO={data.nutrientFacts} />
                         </div>
+                    </div>
+                    <div className="text-center py-2 border-2 border-gray-100 mx-8 rounded-2xl text-gray-600 my-3">
+                        {" "}
+                        Calculations based on data from the USDA Food Data Central
                     </div>
                 </div>
             )}

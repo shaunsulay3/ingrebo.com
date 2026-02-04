@@ -6,6 +6,7 @@ import { AxiosError } from "axios";
 import ErrorPage from "./ErrorPage";
 import SoEmpty from "../../components/SoEmpty";
 import LoadingPage from "./LoadingPage";
+import ShareButton from "../../components/ShareButton";
 
 export function UserRecipesPage() {
     const { slug } = useParams();
@@ -30,7 +31,14 @@ export function UserRecipesPage() {
     }
     return (
         <div className="px-16 mt-8">
-            <h1>{data.username}'s Recipes</h1>
+            <div className="flex items-center mb-4">
+                <h1 className="!m-0">{data.username}'s Recipes</h1>
+                <ShareButton
+                    onClickText={`${data.username}'s recipe page copied to clipboard!`}
+                    copy={`${window.location.origin}/${slug}`}
+                    className="ml-6"
+                />
+            </div>
             {data.recipeThumbnails.length === 0 && <SoEmpty className="my-40" />}
             <div className="columns-[300px]">
                 {data.recipeThumbnails.map((r) => (

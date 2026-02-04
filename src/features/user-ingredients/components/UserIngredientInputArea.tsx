@@ -108,15 +108,15 @@ export default function UserIngredientInputArea({ onSave }: { onSave: () => void
 
     return (
         <div>
-            <div className="px-8 py-2 border-green-800 border-b-2">
+            <div className="px-8 py-2">
                 <div className={`flex flex-wrap items-center gap-x-4`}>
-                    <div className=" text-green-800 text-3xl font-semibold">
+                    <div className="text-3xl font-semibold">
                         {user ? user.username + "'s Ingredients" : "My Ingredients"}
                     </div>
                     <div className="flex items-center flex-1 gap-x-2">
                         <InputBox
                             className={
-                                "my-3 min-w-50 w-full border-0 border-b-1 h-10 border-green-800 text-green-800"
+                                "my-3 min-w-50 w-full border-0 border-b-1 h-10 border-green-800 "
                             }
                             focus={false}
                             maxChars={40}
@@ -142,7 +142,7 @@ export default function UserIngredientInputArea({ onSave }: { onSave: () => void
                     </div>
                 </div>
                 {ingredients.length > 0 && (
-                    <div className="flex flex-wrap gap-y-3 gap-x-5 mb-3">
+                    <div className="flex flex-wrap gap-y-3 gap-x-5 mb-2">
                         {ingredients.map((ingredient) => (
                             <UserIngredient
                                 key={ingredient.name}
@@ -153,6 +153,7 @@ export default function UserIngredientInputArea({ onSave }: { onSave: () => void
                                 isOpen={ingredient.isOpen}
                                 onToggleOpen={handleToggleOpen}
                                 search={true}
+                                border={true}
                             />
                         ))}
                     </div>

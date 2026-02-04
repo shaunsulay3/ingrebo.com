@@ -30,6 +30,22 @@ export default function MyIngredientsPage() {
         if (!data) {
             return;
         }
+        const CATEGORY_ORDER = [
+            "Produce",
+            "Protein",
+            "Grains and Baked Goods",
+            "Dairy and Egg Products",
+            "Other",
+        ] as const;
+        type Category = (typeof CATEGORY_ORDER)[number];
+
+        const categoryRank = new Map(CATEGORY_ORDER.map((cat, i) => [cat, i]));
+        data.sort((a, b) => {
+            const rankA = categoryRank.get(a.category as Category) ?? Number.MAX_SAFE_INTEGER;
+            const rankB = categoryRank.get(b.category as Category) ?? Number.MAX_SAFE_INTEGER;
+
+            return rankA - rankB;
+        });
         let ctg: string[] = [];
         let uiObjects: UserIngredientObject[] = [];
         data.forEach((userIngredientCategory, index) => {
@@ -98,6 +114,22 @@ export default function MyIngredientsPage() {
     const handleSave = () => {
         refetch();
     };
+    const getCategoryColor = (categoryName: string) => {
+        switch (categoryName) {
+            case "Pantry, Snacks, and Drinks":
+                return "bg-orange-100 text-orange-800";
+            case "Produce":
+                return "bg-green-100 text-green-800";
+            case "Dairy and Egg Products":
+                return "bg-purple-100 text-purple-800";
+            case "Grains and Baked Goods":
+                return "bg-blue-100 text-blue-800";
+            case "Protein":
+                return "bg-red-100 text-red-800";
+            default:
+                return "bg-gray-100";
+        }
+    };
     if (isFetching) {
         return (
             <div>
@@ -114,7 +146,10 @@ export default function MyIngredientsPage() {
                 <UserIngredientInputArea onSave={handleSave} />
             </div>
             {categories.length > 0 && (
-                <div className="mt-3 grid grid-cols-2 gap-5">
+                <div
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 
+                [&>*:nth-child(odd):last-child]:sm:col-span-2 px-4 pb-4"
+                >
                     {categories.map((category, categoryIndex) => {
                         if (
                             !userIngredientObjects.some((ui) => ui.categoryIndex === categoryIndex)
@@ -123,10 +158,10 @@ export default function MyIngredientsPage() {
                         }
                         return (
                             <div
-                                key={category}
-                                className="border-2 border-gray-200 rounded-2xl px-4 pt-2 pb-4"
+                                key={categoryIndex}
+                                className={`rounded-xl px-4 pb-4 ${getCategoryColor(category)}`}
                             >
-                                <h4>{category}</h4>
+                                <div className={`pt-3 text-xl mb-2`}>{category}</div>
                                 <div className="flex flex-wrap gap-3">
                                     {userIngredientObjects
                                         .filter((ui) => ui.categoryIndex === categoryIndex)
@@ -143,6 +178,8 @@ export default function MyIngredientsPage() {
                                                 onUpdateVariety={handleUpdateVariety}
                                                 onToggleOpen={handleToggleOpen}
                                                 search={false}
+                                                className=" bg-white"
+                                                border={false}
                                             />
                                         ))}
                                 </div>

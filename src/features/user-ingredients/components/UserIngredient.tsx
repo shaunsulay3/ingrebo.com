@@ -14,6 +14,7 @@ type UserIngredientProps = {
     search: boolean;
     className?: string;
     textSize?: number;
+    border: boolean;
     onDelete?: (id: string) => void;
     onUpdateVariety?: (id: string, varietyName: string) => void;
     onToggleOpen?: (id: string) => void;
@@ -27,6 +28,7 @@ export default function UserIngredient({
     search,
     className,
     textSize = 1.25,
+    border,
     onDelete,
     onUpdateVariety,
     onToggleOpen,
@@ -63,7 +65,9 @@ export default function UserIngredient({
     return (
         <div className="relative" onClick={(e) => e.stopPropagation()}>
             <div
-                className={` ${className} border-2 rounded-2xl cursor-pointer ${
+                className={`${className} ${
+                    border ? "border-2" : "border-0"
+                } rounded-2xl cursor-pointer ${
                     userIngredientDTO
                         ? "border-black"
                         : isPending
@@ -87,7 +91,7 @@ export default function UserIngredient({
             </div>
             {isOpen && (
                 <div
-                    className={`mt-3 absolute top-full left-0 min-w-60 w-auto border-2 bg-white rounded-2xl z-[9999] ${
+                    className={`mt-3 absolute top-full left-0 min-w-60 w-auto border-2 bg-white rounded-2xl z-[9999] text-black ${
                         userIngredient ? "border-green-800" : "border-red-500"
                     }`}
                 >

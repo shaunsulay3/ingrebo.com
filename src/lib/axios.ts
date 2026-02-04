@@ -23,6 +23,9 @@ api.interceptors.response.use(
         if (err.response?.status === 500) {
             toast.error("Uh oh.. Something broke on our end. Please try again later.");
         }
+        if (err.response?.status === 413) {
+            toast.error("The file you are trying to upload is too large.");
+        }
         return Promise.reject(err);
     }
 );

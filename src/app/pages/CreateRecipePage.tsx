@@ -247,8 +247,8 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                             </i>{" "}
                             <br></br>
                             <i>
-                                For more info, and to select a specific variety <b>click</b> the
-                                highlighted ingredient
+                                <b>click</b> the highlighted ingredient for more information or to
+                                change it's variety
                             </i>
                         </p>
 
@@ -280,20 +280,28 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                         />
                     </div>
                     <div className="mx-20 p-4 min-w-50 max-w-80 rounded-2xl text-sm h-fit border border-gray-200">
-                        <h4 className="!m-0">Nutrient Facts (optional)</h4>
-                        Every ingredient in your recipe must satisfy the two conditions below in
-                        order for ingrebo to calculate nutrient information{" "}
-                        <BadgeCheck className="inline-block text-green-800 w-5 pb-1" />{" "}
-                        <ul className="bulleted-list">
-                            <li>
-                                A <b>valid amount</b> (ex: 1 cup, 2 cloves, 20 grams, etc).
-                            </li>
-                            <li>
-                                <b>Specified option</b> (ex: "butter, stick, unsalted"). Ingrebo
-                                selects one for you. To change it, click the highlighted ingredient
-                                and choose from the list.
-                            </li>
-                        </ul>
+                        <h4 className="!m-0 text-green-800">Nutrient Facts (optional)</h4>
+                        <h6 className="text-gray-600 border-b-1">
+                            Based on data from the <br></br>
+                            <span className="font-semibold">USDA Food Data Central</span>
+                        </h6>
+                        <div className="text-sm">
+                            Every ingredient in your recipe must satisfy the two conditions below in
+                            order for ingrebo to calculate nutrient information{" "}
+                            <BadgeCheck className="inline-block text-green-800 w-5 pb-1" />{" "}
+                            <ul className="bulleted-list">
+                                <li>
+                                    A <b>valid amount</b>: <br></br>(ex: 1 cup, 2 cloves, 20 grams)
+                                </li>
+                                <li>
+                                    A <b>specified option</b>: <br></br>(ex: "butter, stick,
+                                    unsalted")
+                                </li>
+                            </ul>
+                            The <b>specified option</b> is what ingrebo uses to lookup nutrition
+                            data. By default, Ingrebo picks one for you. To change it, <b>click</b>{" "}
+                            the highlighted ingredient.
+                        </div>
                     </div>
                 </div>
                 <div className=" p-4 border-t-1 border-gray-200 rounded-b-xl">
