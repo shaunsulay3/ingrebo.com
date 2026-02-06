@@ -28,7 +28,7 @@ function LoginPage() {
                 <ContinueWithGoogle className="h-20 w-[70%] text-4xl mb-4" />
                 <a
                     className="h-15 border rounded-md border-gray-300 flex items-center justify-center text-sm"
-                    href="/"
+                    href={isAuthenticated ? "/" : "/explore"}
                 >
                     <div className="text-center">Continue without an account</div>
                 </a>
