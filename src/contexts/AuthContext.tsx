@@ -55,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (user) localStorage.setItem("user", JSON.stringify(user));
         else localStorage.removeItem("user");
     }, [user]);
-
     return (
         <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
             {children}

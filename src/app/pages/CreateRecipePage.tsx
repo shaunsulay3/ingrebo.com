@@ -97,19 +97,19 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
             setErrorMessage("Failed to get existing recipe id for editing.");
             return null;
         }
-        if (!request.name || request.name.length === 0) {
+        if (!request.name || request.name.trim().length === 0) {
             setErrorMessage("Name is required");
             return null;
         }
-        if (!request.prepTime || !/^\d+$/.test(request.prepTime)) {
+        if (!request.prepTime || !/^\d+$/.test(request.prepTime.trim())) {
             setErrorMessage("Please provide a valid Prep Time");
             return null;
         }
-        if (!request.cookTime || !/^\d+$/.test(request.cookTime)) {
+        if (!request.cookTime || !/^\d+$/.test(request.cookTime.trim())) {
             setErrorMessage("Please provide a valid Cook Time");
             return null;
         }
-        if (!request.servings || !/^\d+$/.test(request.servings)) {
+        if (!request.servings || !/^\d+$/.test(request.servings.trim())) {
             setErrorMessage("Please provide valid amount of servings");
             return null;
         }
@@ -136,9 +136,9 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
         return {
             id: edit && data ? data.id : undefined,
             name: request.name,
-            prepTime: Number(request.prepTime),
-            cookTime: Number(request.cookTime),
-            servings: Number(request.servings),
+            prepTime: Number(request.prepTime.trim()),
+            cookTime: Number(request.cookTime.trim()),
+            servings: Number(request.servings.trim()),
             description: request.description ?? "",
             preparation: request.preparation,
             recipeIngredientLines: request.recipeIngredientLines,
@@ -160,7 +160,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     }
     if (edit && data && !editDataSet) {
         setRequest({
-            name: data.name,
+            name: data.name.trim(),
             prepTime: data.prepTime.toString(),
             cookTime: data.cookTime.toString(),
             servings: data.servings.toString(),

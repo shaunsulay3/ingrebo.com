@@ -77,7 +77,7 @@ function ExplorePage() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="columns-[250px]">
+                            <div className="columns-[300px]">
                                 {data.map((r) => (
                                     <div className="w-full break-inside-avoid mb-4">
                                         <RecipeThumbnail key={r.id} recipeThumbnail={r} />

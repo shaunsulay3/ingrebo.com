@@ -9,15 +9,18 @@ import MyIngredientsPage from "./pages/MyIngredientsPage";
 import SearchPage from "./pages/SearchPage";
 import SavePage from "./pages/SavedPage";
 import ExplorePage from "./pages/ExplorePage";
-import WelcomePage from "./pages/WelcomePage";
 import { Toaster } from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
+import LandingPage from "./pages/LandingPage";
+import HomeGate from "../components/HomeGate";
 
 function App() {
     return (
         <>
             <Routes>
-                <Route path="/" element={<Layout />}>
-                    <Route index element={<ExplorePage />} />
+                <Route path="/" element={<HomeGate />} />
+                <Route element={<Layout />}>
+                    <Route path="/explore" element={<ExplorePage />} />
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/saved" element={<SavePage />} />
                     <Route path="/:authorslug/:slug" element={<RecipePage />} />

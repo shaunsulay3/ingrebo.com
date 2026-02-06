@@ -3,7 +3,13 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
 
-export default function Layout({ showNavbar = true }: { showNavbar?: boolean }) {
+export default function Layout({
+    showNavbar = true,
+    children,
+}: {
+    showNavbar?: boolean;
+    children?: React.ReactNode;
+}) {
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarWidth, setSidebarWidth] = useState(224); // 56 * 4 = 224px (w-56)
 
@@ -42,7 +48,7 @@ export default function Layout({ showNavbar = true }: { showNavbar?: boolean }) 
                     marginLeft: sidebarWidth,
                 }}
             >
-                <Outlet />
+                {children ?? <Outlet />}
             </div>
         </div>
     );

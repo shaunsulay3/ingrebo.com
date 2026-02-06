@@ -255,7 +255,6 @@ function RecipeIngredientLineInputArea({
                     searchRecipeIngredientDTO: dto,
                 }))
             );
-            console.log(newIngredientIndices);
             updateWithNewIngredientIndices(newIngredientIndices);
         }, 1000);
         return timeoutId;

@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 
 function Sidebar({ className, collapsed }: { className?: string; collapsed: boolean }) {
     const location = useLocation();
-    const { user, logout } = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const [profileIsOpen, setProfileIsOpen] = useState(false);
 
     const menuItems = [
-        { label: "Explore", icon: <Compass />, path: "/" },
+        { label: "Explore", icon: <Compass />, path: isAuthenticated ? "/" : "/explore" },
         { label: "Saved", icon: <Bookmark />, path: "/saved", requiresAuth: true },
         {
             label: "My Recipes",
@@ -38,7 +38,7 @@ function Sidebar({ className, collapsed }: { className?: string; collapsed: bool
         >
             <div>
                 <Link
-                    to="/"
+                    to={isAuthenticated ? "/" : "/explore"}
                     className={`flex gap-x-2 items-center h-18 max-h-18 ${
                         collapsed ? "justify-center" : ""
                     }`}
