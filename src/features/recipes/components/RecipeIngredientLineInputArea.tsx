@@ -26,6 +26,7 @@ function RecipeIngredientLineInputArea({
     initialIngredientIndices,
     onChangeCompleteNutrientInfo,
     onChange,
+    onChangeIsLoading,
 }: {
     onChange: (recipeIngredientLineRequests: RecipeIngredientLineRequestDTO[]) => void;
     initialRecipeIngredientLines?: string[];
@@ -37,6 +38,7 @@ function RecipeIngredientLineInputArea({
         specificOptionDescription: string | undefined;
     }[];
     onChangeCompleteNutrientInfo: (complete: boolean) => void;
+    onChangeIsLoading: (isLoading: boolean) => void;
 }) {
     // Create the editor instance
     const editor = useMemo(() => withReact(createEditor()), []);
@@ -50,10 +52,10 @@ function RecipeIngredientLineInputArea({
                       clickedWord: null,
                       searchRecipeIngredientDTO: undefined,
                   };
-              })
+              }),
     );
     const [recipeIngredientLines, setRecipeIngredientLines] = useState<string[]>(
-        initialRecipeIngredientLines ?? []
+        initialRecipeIngredientLines ?? [],
     );
     const [recipeIngredientLineQueryStatus, setRecipeIngredientLineQueryStatus] = useState<
         string[]
@@ -67,6 +69,10 @@ function RecipeIngredientLineInputArea({
         onChangeCompleteNutrientInfo(hasCompleteNutrientInfo);
     }, [hasCompleteNutrientInfo]);
 
+    useEffect(() => {
+        const isLoading = recipeIngredientLineQueryStatus.some((status) => status === "loading");
+        onChangeIsLoading(isLoading);
+    }, [recipeIngredientLineQueryStatus]);
     useEffect(() => {
         const handleClickAnywhere = () => {
             if (ingredientIndices.some((ingIdx) => ingIdx.clickedWord !== null)) {
@@ -103,7 +109,7 @@ function RecipeIngredientLineInputArea({
         if (
             lodash.isEqual(
                 lodash.omit(prevIngredientIndices.current, omit),
-                lodash.omit(ingredientIndices, omit)
+                lodash.omit(ingredientIndices, omit),
             )
         ) {
             prevIngredientIndices.current = ingredientIndices;
@@ -135,11 +141,11 @@ function RecipeIngredientLineInputArea({
         });
         lineIndicesToSearch.forEach((lineIdx) => {
             const inlineIngredientIndices = ingredientIndices.filter(
-                (ingIdx) => ingIdx.line === lineIdx
+                (ingIdx) => ingIdx.line === lineIdx,
             );
             timersRef.current[lineIdx] = fetchSearchRecipeIngredientLine(
                 recipeIngredientLines[lineIdx],
-                inlineIngredientIndices
+                inlineIngredientIndices,
             );
         });
         prevIngredientIndices.current = ingredientIndices;
@@ -149,7 +155,7 @@ function RecipeIngredientLineInputArea({
         const newRequests: RecipeIngredientLineRequestDTO[] = recipeIngredientLines.map(
             (line, index) => {
                 const inLineIngredientIndices = ingredientIndices.filter(
-                    (ingIdx) => ingIdx.line === index
+                    (ingIdx) => ingIdx.line === index,
                 );
                 const recipeIngredientInputsAndNull: (RecipeIngredientRequestDTO | null)[] =
                     inLineIngredientIndices.map((ingIdx) => {
@@ -166,13 +172,13 @@ function RecipeIngredientLineInputArea({
                         };
                     });
                 const recipeIngredientInputs = recipeIngredientInputsAndNull.filter(
-                    (input) => input !== null
+                    (input) => input !== null,
                 );
                 return {
                     line: line,
                     recipeIngredients: recipeIngredientInputs,
                 };
-            }
+            },
         );
         if (lodash.isEqual(newRequests, lastParentUpdate.current)) {
             return;
@@ -183,7 +189,7 @@ function RecipeIngredientLineInputArea({
 
     function fetchSearchRecipeIngredientLine(
         line: string,
-        inLineIngredientIndices: IngredientIndex[]
+        inLineIngredientIndices: IngredientIndex[],
     ): number {
         const timeoutId = setTimeout(async () => {
             if (line.trim() === "") {
@@ -216,7 +222,7 @@ function RecipeIngredientLineInputArea({
                     (ri) =>
                         ri.ingredientIndex.start === ingIdx.start &&
                         ri.ingredientIndex.end === ingIdx.end &&
-                        ingIdx.line === newLineIndex
+                        ingIdx.line === newLineIndex,
                 );
                 if (matchingDTO) {
                     return {
@@ -241,8 +247,8 @@ function RecipeIngredientLineInputArea({
                         (ingIdx) =>
                             ingIdx.start === ri.ingredientIndex.start &&
                             ingIdx.end === ri.ingredientIndex.end &&
-                            ingIdx.line === newLineIndex
-                    )
+                            ingIdx.line === newLineIndex,
+                    ),
             );
             newIngredientIndices = newIngredientIndices.concat(
                 nonMatchingDTOs.map((dto) => ({
@@ -253,7 +259,7 @@ function RecipeIngredientLineInputArea({
                     selectedVarietyName: dto.ingredient.selectedVariety.name,
                     specificOptionDescription: dto.specificOption ? dto.specificOption : undefined,
                     searchRecipeIngredientDTO: dto,
-                }))
+                })),
             );
             updateWithNewIngredientIndices(newIngredientIndices);
         }, 1000);
@@ -268,8 +274,8 @@ function RecipeIngredientLineInputArea({
                             (newIngIdx) =>
                                 newIngIdx.start === ingIdx.start &&
                                 newIngIdx.end === ingIdx.end &&
-                                newIngIdx.line === ingIdx.line
-                        )
+                                newIngIdx.line === ingIdx.line,
+                        ),
                 ),
                 ...newIngredientIndices,
             ];
@@ -422,7 +428,7 @@ function RecipeIngredientLineInputArea({
                 return;
             }
             const inlineIngredientIndices = newIngredientIndices.filter(
-                (ingIdx) => ingIdx.line === index
+                (ingIdx) => ingIdx.line === index,
             );
             const oldIndex = index + (oldLines.length - lines.length);
             if (line !== oldLines[oldIndex]) {
@@ -453,7 +459,7 @@ function RecipeIngredientLineInputArea({
     function handleClick(
         e: React.MouseEvent,
         word: string,
-        ingredientIndex: IngredientIndex | undefined
+        ingredientIndex: IngredientIndex | undefined,
     ) {
         e.stopPropagation();
         if (!ingredientIndex) {
@@ -464,7 +470,7 @@ function RecipeIngredientLineInputArea({
                 if (
                     lodash.isEqual(
                         lodash.omit(prevIngIdx, ["clickedWord"]),
-                        lodash.omit(ingredientIndex, ["clickedWord"])
+                        lodash.omit(ingredientIndex, ["clickedWord"]),
                     )
                 ) {
                     return {
@@ -482,17 +488,17 @@ function RecipeIngredientLineInputArea({
     const handleDoubleClick = (start: number, end: number, lineNumber: number) => {
         const filterOutIngredientIndex = (
             ingredientIndices: IngredientIndex[],
-            filterOut: IngredientIndex
+            filterOut: IngredientIndex,
         ): IngredientIndex[] => {
             return ingredientIndices.filter(
                 (ingIdx) =>
                     ingIdx.start !== filterOut.start ||
                     ingIdx.end !== filterOut.end ||
-                    ingIdx.line !== filterOut.line
+                    ingIdx.line !== filterOut.line,
             );
         };
         const existingIngredientIndex = ingredientIndices.find(
-            (ingIdx) => ingIdx.start <= start && ingIdx.end >= end && ingIdx.line === lineNumber
+            (ingIdx) => ingIdx.start <= start && ingIdx.end >= end && ingIdx.line === lineNumber,
         );
         if (existingIngredientIndex) {
             setIngredientIndices((prev) => {
@@ -504,7 +510,7 @@ function RecipeIngredientLineInputArea({
                 (ingIdx) =>
                     ingIdx.line === lineNumber &&
                     ((ingIdx.start - end === 1 && line[ingIdx.start - 1] === " ") ||
-                        (start - ingIdx.end === 1 && line[start - 1] === " "))
+                        (start - ingIdx.end === 1 && line[start - 1] === " ")),
             );
             if (adjacentIngIdx) {
                 setIngredientIndices((prev) => {
@@ -544,7 +550,7 @@ function RecipeIngredientLineInputArea({
 
     function handleUserUpdatedIngredientIndex(
         newIngredientIndex: IngredientIndex,
-        varietyChanged: boolean
+        varietyChanged: boolean,
     ) {
         setRecipeIngredientLineQueryStatus((prev) => {
             const copy = [...prev];
@@ -573,7 +579,7 @@ function RecipeIngredientLineInputArea({
         ].filter((ingIdx) => ingIdx.line === newIngredientIndex.line);
         timersRef.current[newIngredientIndex.line] = fetchSearchRecipeIngredientLine(
             recipeIngredientLines[newIngredientIndex.line],
-            newInLineIngredientIndices
+            newInLineIngredientIndices,
         );
     }
 
@@ -584,7 +590,7 @@ function RecipeIngredientLineInputArea({
                 (ingIdx) =>
                     ingIdx.start <= leaf.start &&
                     ingIdx.end >= leaf.end &&
-                    ingIdx.line === leaf.line
+                    ingIdx.line === leaf.line,
             );
             let bgColor: string;
             if (!ingredientIndex) {
@@ -630,7 +636,7 @@ function RecipeIngredientLineInputArea({
                                                     selectedVarietyName: name,
                                                     specificOptionDescription: undefined,
                                                 },
-                                                true
+                                                true,
                                             );
                                         }}
                                         setSpecificOptionDescription={(description: string) => {
@@ -639,7 +645,7 @@ function RecipeIngredientLineInputArea({
                                                     ...ingredientIndex,
                                                     specificOptionDescription: description,
                                                 },
-                                                false
+                                                false,
                                             );
                                         }}
                                         searchRecipeIngredientDTO={
@@ -658,7 +664,7 @@ function RecipeIngredientLineInputArea({
                 );
             }
         },
-        [ingredientIndices, recipeIngredientLineQueryStatus]
+        [ingredientIndices, recipeIngredientLineQueryStatus],
     );
 
     // Decorate the text to mark the word "react"
@@ -709,7 +715,7 @@ function RecipeIngredientLineInputArea({
             <div className="min-w-10 pt-2 ">
                 {recipeIngredientLines.map((_, index) => {
                     const inLineIngredientIndices = ingredientIndices.filter(
-                        (ingIdx) => ingIdx.line === index
+                        (ingIdx) => ingIdx.line === index,
                     );
                     return (
                         <div className=" flex items-center min-h-6 max-h-6 gap-x-1">
@@ -741,7 +747,7 @@ function RecipeIngredientLineInputArea({
                         <div className="pr-2 min-w-max ">
                             {recipeIngredientLines.map((_, index) => {
                                 const inLineIngredientIndices = ingredientIndices.filter(
-                                    (ingIdx) => ingIdx.line === index
+                                    (ingIdx) => ingIdx.line === index,
                                 );
                                 return (
                                     <div

@@ -41,6 +41,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     const [createButtonClickable, setCreateButtonClickable] = useState<boolean>(true);
     const { isAuthenticated, user } = useAuth();
     const [hasCompleteNutrientInfo, setHasCompleteNutrientInfo] = useState<boolean>(false);
+    const [rilInputAreaIsLoading, setRilInputAreaIsLoading] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -68,7 +69,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
         onError: (error: any) => {
             toast.error(
                 error?.response?.data?.message ??
-                    "An error occurred while creating the recipe. Please try again later."
+                    "An error occurred while creating the recipe. Please try again later.",
             );
         },
     });
@@ -81,6 +82,10 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     }, [request]);
 
     const handleCreate = () => {
+        if (rilInputAreaIsLoading) {
+            toast.error("Please wait for ingredient information to finish loading");
+            return null;
+        }
         const validRequest = getValidRequest();
         if (!validRequest) {
             setCreateButtonClickable(false);
@@ -119,7 +124,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
         }
         if (!request.recipeIngredientLines.some((line) => line.recipeIngredients.length > 0)) {
             setErrorMessage(
-                "Your recipe has no ingredients. If you don't have any highlighted ingredients, please double click them to search and add."
+                "Your recipe has no ingredients. If you don't have any highlighted ingredients, please double click them to search and add.",
             );
             return null;
         }
@@ -190,7 +195,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
     return (
         <div className="">
             <div className="h-18 flex items-center justify-end px-8 text-2xl font-extrabold border-b mb-8 text-green-900 border-gray-200">
-                Edit Recipe
+                {edit ? "Edit Recipe" : "Create Recipe"}
             </div>
             <div className="flex flex-wrap  justify-between gap-y-4 items-center mx-20 mb-4">
                 <div className=" max-w-150 w-full">
@@ -259,7 +264,7 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                             initialRecipeIngredientLines={request.recipeIngredientLines?.map(
                                 (riLineRequest) => {
                                     return riLineRequest.line;
-                                }
+                                },
                             )}
                             initialIngredientIndices={request.recipeIngredientLines?.flatMap(
                                 (riLineRequest, index) => {
@@ -272,11 +277,12 @@ function CreateRecipePage({ edit = false }: { edit?: boolean }) {
                                             specificOptionDescription: riRequest.specificOption,
                                         };
                                     });
-                                }
+                                },
                             )}
                             onChangeCompleteNutrientInfo={(complete) =>
                                 setHasCompleteNutrientInfo(complete)
                             }
+                            onChangeIsLoading={(loading) => setRilInputAreaIsLoading(loading)}
                         />
                     </div>
                     <div className="mx-20 p-4 min-w-50 max-w-80 rounded-2xl text-sm h-fit border border-gray-200">
